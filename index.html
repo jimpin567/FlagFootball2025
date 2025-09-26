@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flag Football — Clean Plays + Rotations (fixed arrows & depth)</title>
+<style>
+  :root{
+    --bg:#0b0f14; --card:#121820; --ink:#eaf2ff; --muted:#a9b8cc; --accent:#66b2ff;
+    --field-green:#2e7d32; --field-green-dark:#1b5e20; --field-line:#e0f2f1;
+    --qb:#1e88e5; --center:#6d4c41; --wr:#f4511e; --slot:#fbc02d; --rb:#8e24aa; --flex:#26a69a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  header{padding:14px 16px;border-bottom:1px solid #1e2835}
+  h1{margin:0;font-size:18px} .sub{font-size:12px;color:var(--muted)}
+  nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  nav button{padding:8px 10px;border-radius:10px;background:#101522;border:1px solid #2a3a4f;color:var(--ink);cursor:pointer}
+  nav button.active{background:var(--accent);color:#002b55;border-color:var(--accent)}
+  main{padding:12px;max-width:1100px;margin:0 auto}
+  .panel{background:var(--card);border:1px solid #1e2835;border-radius:12px;padding:12px;margin:10px 0}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  select,input,button{background:#101522;color:var(--ink);border:1px solid #25405f;border-radius:10px;padding:10px 12px}
+  button.primary{background:var(--accent);color:#002b55;border-color:var(--accent);font-weight:700;cursor:pointer}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid #3b4d66;color:#a9b8cc;font-size:12px}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .muted{color:#a9b8cc;font-size:12px}
+
+  /* Board tiles */
+  .assign{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  @media(min-width:520px){.assign{grid-template-columns:repeat(3,1fr)}}
+  .tile{border-radius:12px;padding:12px;border:1px solid #2a3a4f}
+  .tile h4{margin:0 0 6px 0;font-size:14px;color:#a9b8cc}
+  .big{font-size:28px;font-weight:800}
+  .role-QB{background:#1e88e520;border-color:#1f4d80}
+  .role-C{background:#6d4c4120;border-color:#5d4037}
+  .role-X,.role-Z{background:#f4511e20;border-color:#d84315}
+  .role-Y{background:#fbc02d20;border-color:#b28900}
+  .role-RB{background:#8e24aa20;border-color:#6a1b9a}
+  .role-Flex{background:#26a69a20;border-color:#0d6b62}
+
+  /* Field + routes (shorter field for better depth perception) */
+  .field-wrap{background:linear-gradient(180deg,var(--field-green),var(--field-green-dark));border-radius:12px;padding:8px;border:2px solid #123814}
+  .field{height:320px;position:relative;background:
+    repeating-linear-gradient(to bottom, transparent 0, transparent 28px, rgba(255,255,255,.12) 28px, rgba(255,255,255,.12) 30px);
+    border-radius:10px}
+  .sideline{position:absolute;inset:0;box-shadow:inset 0 0 0 3px var(--field-line);border-radius:10px}
+  svg{width:100%;height:100%;display:block}
+  .player{stroke:#0008;stroke-width:1.2px}
+  .bubble{font-size:14px;font-weight:800;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:1.5px}
+  .role-lbl{font-size:11px;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:.8px}
+  .route{fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+  .route.alt{stroke:#ffeb3b;marker-end:url(#arrowAlt)}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:10px}
+  @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{border:1px solid #2a3a4f;padding:6px;text-align:center}
+  th{background:#101522}
+</style>
+</head>
+<body>
+<header>
+  <h1>Flag Football — Clean Plays + Rotations</h1>
+  <div class="sub">Rosters: 7–10 • Formats: 5v5 / 6v6 / 7v7 • Bench-group subs • 10 plays (fixed arrows & depth)</div>
+  <nav>
+    <button class="tab active" data-tab="board">Board</button>
+    <button class="tab" data-tab="plays">Plays</button>
+    <button class="tab" data-tab="rotations">Rotations</button>
+    <button class="tab" data-tab="tips">Tips</button>
+  </nav>
+</header>
+
+<main>
+  <div class="panel">
+    <div class="controls">
+      <label>Format
+        <select id="format">
+          <option value="5">5v5</option>
+          <option value="6" selected>6v6</option>
+          <option value="7">7v7</option>
+        </select>
+      </label>
+      <label>Roster
+        <select id="roster">
+          <option>7</option><option selected>8</option><option>9</option><option>10</option>
+        </select>
+      </label>
+      <label>Identifiers
+        <select id="idMode">
+          <option value="number" selected>Player #</option>
+          <option value="initials">Initials</option>
+          <option value="off">Off</option>
+        </select>
+      </label>
+      <label>Mirror
+        <select id="mirror">
+          <option value="R" selected>Right</option>
+          <option value="L">Left</option>
+        </select>
+      </label>
+      <div class="row">
+        <button class="primary" id="prevBtn">◀ Prev</button>
+        <button class="primary" id="nextBtn">Next ▶</button>
+      </div>
+    </div>
+    <details style="margin-top:6px">
+      <summary>Optional: map player # → initials</summary>
+      <div id="initials" class="row" style="margin-top:6px"></div>
+    </details>
+    <div class="muted" id="meta">Series 1 of N • Bench this series: —</div>
+  </div>
+
+  <!-- BOARD -->
+  <section id="board" class="panel">
+    <div class="row">
+      <span class="pill">QB</span><span class="pill">C</span><span class="pill">X (left WR)</span>
+      <span class="pill">Z (right WR)</span><span class="pill">Y (slot)</span><span class="pill">RB</span><span class="pill">Flex (7v7)</span>
+    </div>
+    <div class="assign" id="assignGrid"></div>
+    <div class="muted" id="benchRow" style="margin-top:10px">Bench: —</div>
+  </section>
+
+  <!-- PLAYS -->
+  <section id="plays" class="panel" style="display:none">
+    <div class="row"><span class="pill">10 plays • Hitch/Slant/Out/Post/Corner/Fly + RB Flat/Swing/Wheel/Check</span></div>
+    <div class="grid" id="playGrid"></div>
+  </section>
+
+  <!-- ROTATIONS -->
+  <section id="rotations" class="panel" style="display:none">
+    <h3>Equal-time Rotation (Bench-Group Subs)</h3>
+    <div class="muted" style="margin-bottom:6px">
+      Bench count = roster − on-field. Those players sit together and groups cycle. Active positions rotate so everyone gets QB.
+    </div>
+    <div id="rotationTable"></div>
+  </section>
+
+  <!-- TIPS -->
+  <section id="tips" class="panel" style="display:none">
+    <h3>Game Management</h3>
+    <ul>
+      <li><b>Series flow:</b> Same series plays both ways. On change of possession, tap <b>Next ▶</b> to sub the next bench group.</li>
+      <li><b>Depth cues:</b> Field scaled for 5/10/15/20yd depths; cones at 5 & 10 help kids.</li>
+      <li><b>Mirror:</b> flip left/right without changing assignments.</li>
+    </ul>
+  </section>
+</main>
+
+<script>
+  const $ = s=>document.querySelector(s);
+  const $$ = s=>Array.from(document.querySelectorAll(s));
+
+  /* ===== Base positions (shorter field coordinates) ===== */
+  // viewBox still 600x320; bubbles sit a bit closer to bottom because field is shorter
+  const POS_BASE = [
+    {key:"QB",   color:"var(--qb)",    x:300, y:275},
+    {key:"C",    color:"var(--center)",x:300, y:245},
+    {key:"X",    color:"var(--wr)",    x:180, y:245}, // left WR
+    {key:"Z",    color:"var(--wr)",    x:420, y:245}, // right WR
+    {key:"Y",    color:"var(--slot)",  x:240, y:260}, // slot
+    {key:"RB",   color:"var(--rb)",    x:360, y:260},
+    {key:"Flex", color:"var(--flex)",  x:300, y:220}  // 7v7 only
+  ];
+
+  function keysForFormat(fmt){
+    if(fmt==5) return ["QB","C","X","Z","RB"];
+    if(fmt==6) return ["QB","C","X","Z","Y","RB"];
+    return ["QB","C","X","Z","Y","RB","Flex"];
+  }
+
+  /* ===== Route library with better depth scale & offset =====
+     Scale for the shorter field:
+     5y ≈ 36px, 10y ≈ 72px, 15y ≈ 108px, 20y ≈ 144px
+  */
+  const OFF = { up:16, side:16 };
+  const YD = { y5:36, y10:72, y15:108, y20:144 };
+
+  const R = {
+    // WR routes
+    HITCH:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y15} L${x-20} ${y-YD.y10}`],
+    SLANT:(x,y)=>[`M${x+OFF.side} ${y} L${x+100} ${y-40}`],              // ~10y slant
+    OUT10:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y10} H${x+130}`],
+    POST:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y15} L${x+105} ${y-YD.y20-15}`],
+    CORNER:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y15} L${x+105} ${y-YD.y10}`],
+    FLY:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y20-5}`],
+    // RB + Center
+    FLAT:(x,y)=>[`M${x+OFF.side} ${y} H${x+150}`],
+    SWING:(x,y)=>[`M${x+OFF.side} ${y} C${x+30} ${y} ${x+85} ${y-10} ${x+150} ${y-28}`],
+    WHEEL:(x,y)=>[`M${x+OFF.side} ${y} H${x+95} C${x+125} ${y-10} ${x+125} ${y-60} ${x+125} ${y-YD.y15}`],
+    CHECK:(x,y)=>[`M${x} ${y-OFF.up} L${x-22} ${y-12} L${x} ${y-24}`],
+    C_SIT:(x,y)=>[`M${x} ${y-OFF.up} V${y-40}`],
+    C_SLANT:(x,y)=>[`M${x} ${y-OFF.up} L${x+68} ${y-34}`]
+  };
+
+  function mirroredX(x){ return ($("#mirror").value==="L") ? (600 - x) : x; }
+  function P(key){ const p=POS_BASE.find(pp=>pp.key===key); return {...p, x:mirroredX(p.x)}; }
+  function segs(routeFn, key){ const {x,y}=P(key); return routeFn(x,y); }
+
+  /* ===== SVG defs: auto-oriented arrowheads ===== */
+  function svgDefs(){
+    return `
+      <defs>
+        <marker id="arrow" markerWidth="12" markerHeight="12" refX="8" refY="6" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,12 L12,6 z" fill="#ffffff" stroke="#000" stroke-width="0.8"></path>
+        </marker>
+        <marker id="arrowAlt" markerWidth="12" markerHeight="12" refX="8" refY="6" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,12 L12,6 z" fill="#ffeb3b" stroke="#000" stroke-width="0.8"></path>
+        </marker>
+      </defs>
+    `;
+  }
+
+  /* ===== Plays (10) ===== */
+  function ply_SINGLE_SET_2(fmt){
+    const s=[];
+    s.push(...segs(R.OUT10,"X"));
+    s.push(...segs(R.C_SIT,"C"));
+    if(fmt>=6) s.push(...segs(R.SLANT,"Y"));
+    s.push(...segs(R.CORNER,"Z"));
+    s.push(...segs(R.FLAT,"RB"));
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
+  }
+  function ply_DOUBLE_BACK_1(fmt){
+    const s=[];
+    s.push(...segs(R.OUT10,"X"));
+    s.push(...segs(R.C_SIT,"C"));
+    if(fmt>=6) s.push(...segs(R.SLANT,"Y"));
+    s.push(...segs(R.CORNER,"Z"));
+    s.push(...segs(R.SWING,"RB"));
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
+  }
+  function ply_DOUBLE_BACK_3(fmt){
+    const s=[];
+    s.push(...segs(R.FLY,"X"));
+    s.push(...segs(R.C_SLANT,"C"));
+    if(fmt>=6) s.push(...segs(R.SLANT,"Y"));
+    s.push(...segs(R.OUT10,"Z"));
+    s.push(...segs(R.FLAT,"RB"));
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
+  }
+  function ply_SMASH(fmt){
+    const s=[];
+    s.push(...segs(R.HITCH,"X"));
+    if(fmt>=6) s.push(...segs(R.CORNER,"Y"));
+    s.push(...segs(R.HITCH,"Z"));
+    s.push(...segs(R.FLAT,"RB"));
+    s.push(...segs(R.C_SIT,"C"));
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
+  }
+  function ply_FLOOD(fmt){
+    const s=[];
+    s.push(...segs(R.CORNER,"Z"));        // high
+    if(fmt>=6) s.push(...segs(R.OUT10,"Y")); // mid
+    s.push(...segs(R.FLAT,"RB"));         // low
+    s.push(...segs(R.SLANT,"X"));         // backside
+    s.push(...segs(R.C_SIT,"C"));
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
+  }
+  function ply_QUICK_SLANTS(fmt){
+    const s=[];
+    s.push(...segs(R.SLANT,"X"));
+    if(fmt>=6) s.push(...segs(R.SLANT,"Y"));
+    s.push(...segs(R.SLANT,"Z"));
+    s.push(...segs(R.C_SIT,"C"));
+    s.push(...segs(R.CHECK,"RB"));
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
+  }
+  function ply_LEVELS(fmt){
+    const s=[];
+    s.push(...segs(R.POST,"X"));
+    if(fmt>=6) s.push(...segs(R.OUT10,"Y"));
+    s.push(...segs(R.FLAT,"RB"));
+    s.push(...segs(R.FLY,"Z"));
+    s.push(...segs(R.C_SIT,"C"));
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
+  }
+  function ply_DRIVE(fmt){
+    const s=[];
+    s.push(...segs(R.SLANT,"X"));
+    if(fmt>=6) s.push(...segs(R.OUT10,"Y"));
+    s.push(...segs(R.POST,"Z"));
+    s.push(...segs(R.SWING,"RB"));
+    s.push(...segs(R.C_SIT,"C"));
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
+  }
+  function ply_WHEEL_SHOT(fmt){
+    const s=[];
+    s.push(...segs(R.OUT10,"X"));
+    if(fmt>=6) s.push(...segs(R.SLANT,"Y"));
+    s.push(...segs(R.FLY,"Z"));
+    s.push(...segs(R.WHEEL,"RB"));
+    s.push(...segs(R.C_SIT,"C"));
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
+  }
+  function ply_STICK(fmt){
+    const s=[];
+    s.push(...segs(R.HITCH,"X"));
+    if(fmt>=6) s.push(...segs(R.OUT10,"Y"));
+    s.push(...segs(R.CORNER,"Z"));
+    s.push(...segs(R.FLAT,"RB"));
+    s.push(...segs(R.C_SIT,"C"));
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
+  }
+
+  const PLAYS = [
+    {name:"Single Set 2",  render:ply_SINGLE_SET_2},
+    {name:"Double Back 1", render:ply_DOUBLE_BACK_1},
+    {name:"Double Back 3", render:ply_DOUBLE_BACK_3},
+    {name:"Smash",         render:ply_SMASH},
+    {name:"Flood",         render:ply_FLOOD},
+    {name:"Quick Slants",  render:ply_QUICK_SLANTS},
+    {name:"Levels",        render:ply_LEVELS},
+    {name:"Drive",         render:ply_DRIVE},
+    {name:"Wheel Shot",    render:ply_WHEEL_SHOT},
+    {name:"Stick",         render:ply_STICK}
+  ];
+
+  /* ===== Rotation: bench-group subs + position rotation ===== */
+  function rotationRows(roster, fmt){
+    const keys = keysForFormat(fmt);
+    const on = keys.length;                         // 5, 6, or 7 on field
+    const benchCount = Math.max(0, roster - on);    // # kids who sit each series
+    const players = Array.from({length: roster}, (_,i)=> i+1);
+
+    // Build bench groups of size benchCount; if no bench, single empty group
+    const groups = [];
+    if(benchCount===0){ groups.push([]); }
+    else{
+      for(let i=0;i<roster;i+=benchCount) groups.push(players.slice(i, i+benchCount));
+    }
+    const G = groups.length;
+
+    const rows = [];
+    for(let s=0; s<Math.max(roster, G); s++){
+      const bench = groups[s % G];
+      const active = players.filter(p=> !bench.includes(p));
+      // rotate active order each series so positions change (ensures QB turns)
+      const rotated = active.map((_,i)=> active[(i + s) % active.length]);
+      const lineup = {};
+      for(let i=0;i<keys.length;i++) lineup[keys[i]] = rotated[i];
+      rows.push({series:s+1, lineup, bench:[...bench]});
+    }
+    return rows;
+  }
+
+  /* ===== UI helpers ===== */
+  function buildInitials(){
+    const n = parseInt($("#roster").value,10);
+    const box = $("#initials"); box.innerHTML="";
+    for(let i=1;i<=n;i++){
+      const inp=document.createElement("input");
+      inp.placeholder="#"+i+" ABC"; inp.id="init-"+i; inp.maxLength=3; inp.style.width="78px";
+      box.appendChild(inp);
+    }
+  }
+  function initialsMap(){
+    const n = parseInt($("#roster").value,10), map={};
+    for(let i=1;i<=n;i++){ map[i]=($("#init-"+i)?.value||"").toUpperCase().slice(0,3); }
+    return map;
+  }
+  function mirroredX(x){ return ($("#mirror").value==="L") ? (600 - x) : x; }
+  function Pkey(key){ const p=POS_BASE.find(pp=>pp.key===key); return {...p, x:mirroredX(p.x)}; }
+
+  function playerBubble(posKey, label){
+    const p = Pkey(posKey);
+    return `
+      <circle cx="${p.x}" cy="${p.y}" r="16" class="player" fill="${p.color}"></circle>
+      <text x="${p.x}" y="${p.y+4}" text-anchor="middle" class="bubble">${label}</text>
+      <text x="${p.x}" y="${p.y+18}" text-anchor="middle" class="role-lbl">${posKey}</text>
+    `;
+  }
+
+  let currentSeries = 1;
+
+  function renderBoard(){
+    const fmt = parseInt($("#format").value,10);
+    const roster = parseInt($("#roster").value,10);
+    const idMode = $("#idMode").value;
+    const init = initialsMap();
+    const rows = rotationRows(roster, fmt);
+    if(currentSeries>rows.length) currentSeries=1;
+    const row = rows[currentSeries-1];
+    $("#meta").textContent = `Series ${currentSeries} of ${rows.length} • Bench this series: ${row.bench.join(", ")||"—"}`;
+
+    const grid=$("#assignGrid"); grid.innerHTML="";
+    keysForFormat(fmt).forEach(pos=>{
+      const num=row.lineup[pos];
+      const label=(idMode==="initials" && init[num])? init[num] : (idMode==="off"?"":num);
+      const tile=document.createElement("div");
+      tile.className="tile role-"+pos;
+      tile.innerHTML=`<h4>${pos}</h4><div class="big">${label}</div>`;
+      grid.appendChild(tile);
+    });
+    $("#benchRow").textContent = row.bench.length ? "Bench: "+row.bench.join(", ") : "Bench: —";
+  }
+
+  function renderPlays(){
+    const fmt = parseInt($("#format").value,10);
+    const roster = parseInt($("#roster").value,10);
+    const idMode = $("#idMode").value;
+    const init = initialsMap();
+    const rows = rotationRows(roster, fmt);
+    if(currentSeries>rows.length) currentSeries=1;
+    const row = rows[currentSeries-1];
+
+    const grid=$("#playGrid"); grid.innerHTML="";
+    PLAYS.forEach(p=>{
+      // bubbles
+      const bubbles = keysForFormat(fmt).map(k=>{
+        const num = row.lineup[k];
+        const label=(idMode==="initials" && init[num])? init[num] : (idMode==="off"?"":num);
+        return playerBubble(k,label);
+      }).join("");
+
+      const routes = p.render(fmt);
+      const card=document.createElement("div");
+      card.className="panel";
+      card.innerHTML=`
+        <h3 style="margin:4px 0">${p.name}</h3>
+        <div class="field-wrap"><div class="field"><div class="sideline"></div>
+          <svg viewBox="0 0 600 320">
+            ${svgDefs()}
+            ${bubbles}
+            ${routes}
+          </svg>
+        </div></div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function renderRotation(){
+    const fmt = parseInt($("#format").value,10);
+    const roster = parseInt($("#roster").value,10);
+    const rows = rotationRows(roster, fmt);
+    const pkeys = keysForFormat(fmt);
+    let html = `<table><thead><tr><th>Series</th>${pkeys.map(p=>`<th>${p}</th>`).join("")}<th>Bench</th></tr></thead><tbody>`;
+    rows.forEach(r=>{
+      html += `<tr><td>${r.series}</td>${pkeys.map(p=>`<td>${r.lineup[p]||""}</td>`).join("")}<td>${r.bench.join(", ")||"-"}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+    $("#rotationTable").innerHTML=html;
+  }
+
+  function renderAll(){ renderBoard(); renderPlays(); renderRotation(); }
+
+  // Tabs
+  $$(".tab").forEach(btn=>btn.addEventListener("click", ()=>{
+    $$(".tab").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    ["board","plays","rotations","tips"].forEach(id=>$("#"+id).style.display="none");
+    $("#"+btn.dataset.tab).style.display="block";
+    if(btn.dataset.tab==="rotations") renderRotation();
+    if(btn.dataset.tab==="plays") renderPlays();
+    if(btn.dataset.tab==="board") renderBoard();
+  }));
+
+  // Controls
+  $("#format").addEventListener("change", ()=>{ currentSeries=1; renderAll(); });
+  $("#roster").addEventListener("change", ()=>{ buildInitials(); currentSeries=1; renderAll(); });
+  $("#idMode").addEventListener("change", renderAll);
+  $("#mirror").addEventListener("change", renderAll);
+  $("#nextBtn").addEventListener("click", ()=>{ currentSeries++; const r=parseInt($("#roster").value,10); if(currentSeries>r) currentSeries=1; renderAll(); });
+  $("#prevBtn").addEventListener("click", ()=>{ currentSeries--; const r=parseInt($("#roster").value,10); if(currentSeries<1) currentSeries=r; renderAll(); });
+
+  // Init
+  buildInitials();
+  renderAll();
+</script>
+</body>
+</html>
