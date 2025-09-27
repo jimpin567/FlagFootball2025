@@ -217,6 +217,7 @@
     if(fmt>=6) s.push(...segs(R.SLANT,"WR3"));
     s.push(...segs(R.CORNER,"WR2"));
     s.push(...segs(R.FLAT,"RB"));
+    if(fmt>=7) s.push(...segs(R.POST,"Flex"));
     return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_DOUBLE_BACK_1(fmt){
@@ -226,6 +227,7 @@
     if(fmt>=6) s.push(...segs(R.CROSS_BEHIND,"WR3")); // That sweet cross behind play!
     s.push(...segs(R.CORNER,"WR2"));
     s.push(...segs(R.SWING,"RB"));
+    if(fmt>=7) s.push(...segs(R.CHECK,"Flex"));
     return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_DOUBLE_BACK_3(fmt){
@@ -235,6 +237,7 @@
     if(fmt>=6) s.push(...segs(R.SLANT,"WR3"));
     s.push(...segs(R.OUT10,"WR2"));
     s.push(...segs(R.FLAT,"RB"));
+    if(fmt>=7) s.push(...segs(R.POST,"Flex"));
     return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_SMASH(fmt){
@@ -244,6 +247,7 @@
     s.push(...segs(R.HITCH,"WR2"));
     s.push(...segs(R.FLAT,"RB"));
     s.push(...segs(R.C_SIT,"C"));
+    if(fmt>=7) s.push(...segs(R.FLY,"Flex"));
     return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_FLOOD(fmt){
@@ -253,6 +257,7 @@
     s.push(...segs(R.FLAT,"RB"));           // low
     s.push(...segs(R.SLANT,"WR1"));         // backside
     s.push(...segs(R.C_SIT,"C"));
+    if(fmt>=7) s.push(...segs(R.CHECK,"Flex"));
     return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_QUICK_SLANTS(fmt){
@@ -262,6 +267,7 @@
     s.push(...segs(R.SLANT,"WR2"));
     s.push(...segs(R.C_SIT,"C"));
     s.push(...segs(R.CHECK,"RB"));
+    if(fmt>=7) s.push(...segs(R.SLANT,"Flex"));
     return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_LEVELS(fmt){
@@ -271,7 +277,8 @@
     s.push(...segs(R.FLAT,"RB"));
     s.push(...segs(R.FLY,"WR2"));
     s.push(...segs(R.C_SIT,"C"));
-    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></map>`).join('');
+    if(fmt>=7) s.push(...segs(R.CORNER,"Flex"));
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_DRIVE(fmt){
     const s=[];
@@ -280,6 +287,7 @@
     s.push(...segs(R.POST,"WR2"));
     s.push(...segs(R.SWING,"RB"));
     s.push(...segs(R.C_SIT,"C"));
+    if(fmt>=7) s.push(...segs(R.FLY,"Flex"));
     return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_WHEEL_SHOT(fmt){
@@ -289,6 +297,7 @@
     s.push(...segs(R.FLY,"WR2"));
     s.push(...segs(R.WHEEL,"RB"));
     s.push(...segs(R.C_SIT,"C"));
+    if(fmt>=7) s.push(...segs(R.POST,"Flex"));
     return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_STICK(fmt){
@@ -298,6 +307,7 @@
     s.push(...segs(R.CORNER,"WR2"));
     s.push(...segs(R.FLAT,"RB"));
     s.push(...segs(R.C_SIT,"C"));
+    if(fmt>=7) s.push(...segs(R.HITCH,"Flex"));
     return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
 
