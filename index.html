@@ -39,9 +39,9 @@
   .role-RB{background:#8e24aa20;border-color:#6a1b9a}
   .role-Flex{background:#26a69a20;border-color:#0d6b62}
 
-  /* Field + routes (shorter field for better depth perception) */
+  /* Field + routes (deeper field for better depth perception) */
   .field-wrap{background:linear-gradient(180deg,var(--field-green),var(--field-green-dark));border-radius:12px;padding:8px;border:2px solid #123814}
-  .field{height:320px;position:relative;background:
+  .field{height:410px;position:relative;background:
     repeating-linear-gradient(to bottom, transparent 0, transparent 28px, rgba(255,255,255,.12) 28px, rgba(255,255,255,.12) 30px);
     border-radius:10px}
   .sideline{position:absolute;inset:0;box-shadow:inset 0 0 0 3px var(--field-line);border-radius:10px}
@@ -151,16 +151,16 @@
   const $ = s=>document.querySelector(s);
   const $$ = s=>Array.from(document.querySelectorAll(s));
 
-  /* ===== Base positions (shorter field coordinates) ===== */
-  // viewBox still 600x320; bubbles sit a bit closer to bottom because field is shorter
+  /* ===== Base positions (deeper field coordinates) ===== */
+  // viewBox now 600x420; base alignments push offense nearer the bottom hash
   const POS_BASE = [
-    {key:"QB",   color:"var(--qb)",    x:300, y:275},
-    {key:"C",    color:"var(--center)",x:300, y:245},
-    {key:"X",    color:"var(--wr)",    x:180, y:245}, // left WR
-    {key:"Z",    color:"var(--wr)",    x:420, y:245}, // right WR
-    {key:"Y",    color:"var(--slot)",  x:240, y:260}, // slot
-    {key:"RB",   color:"var(--rb)",    x:360, y:260},
-    {key:"Flex", color:"var(--flex)",  x:300, y:220}  // 7v7 only
+    {key:"QB",   color:"var(--qb)",    x:300, y:360},
+    {key:"C",    color:"var(--center)",x:300, y:330},
+    {key:"X",    color:"var(--wr)",    x:180, y:330}, // left WR
+    {key:"Z",    color:"var(--wr)",    x:420, y:330}, // right WR
+    {key:"Y",    color:"var(--slot)",  x:240, y:345}, // slot
+    {key:"RB",   color:"var(--rb)",    x:360, y:345},
+    {key:"Flex", color:"var(--flex)",  x:300, y:300}  // 7v7 only
   ];
 
   function keysForFormat(fmt){
@@ -170,27 +170,27 @@
   }
 
   /* ===== Route library with better depth scale & offset =====
-     Scale for the shorter field:
-     5y ≈ 36px, 10y ≈ 72px, 15y ≈ 108px, 20y ≈ 144px
+     Scale for the deeper field:
+     5y ≈ 48px, 10y ≈ 96px, 15y ≈ 144px, 20y ≈ 192px
   */
-  const OFF = { up:16, side:16 };
-  const YD = { y5:36, y10:72, y15:108, y20:144 };
+  const OFF = { up:20, side:18 };
+  const YD = { y5:48, y10:96, y15:144, y20:192 };
 
   const R = {
     // WR routes
-    HITCH:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y15} L${x-20} ${y-YD.y10}`],
-    SLANT:(x,y)=>[`M${x+OFF.side} ${y} L${x+100} ${y-40}`],              // ~10y slant
-    OUT10:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y10} H${x+130}`],
-    POST:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y15} L${x+105} ${y-YD.y20-15}`],
-    CORNER:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y15} L${x+105} ${y-YD.y10}`],
-    FLY:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y20-5}`],
+    HITCH:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y15} L${x-26} ${y-YD.y10+12}`],
+    SLANT:(x,y)=>[`M${x+OFF.side} ${y} L${x+120} ${y-YD.y10}`],              // ~10y slant
+    OUT10:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y10} H${x+150}`],
+    POST:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y15} L${x+115} ${y-YD.y20-24}`],
+    CORNER:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y15} L${x+130} ${y-YD.y10}`],
+    FLY:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y20-10}`],
     // RB + Center
-    FLAT:(x,y)=>[`M${x+OFF.side} ${y} H${x+150}`],
-    SWING:(x,y)=>[`M${x+OFF.side} ${y} C${x+30} ${y} ${x+85} ${y-10} ${x+150} ${y-28}`],
-    WHEEL:(x,y)=>[`M${x+OFF.side} ${y} H${x+95} C${x+125} ${y-10} ${x+125} ${y-60} ${x+125} ${y-YD.y15}`],
-    CHECK:(x,y)=>[`M${x} ${y-OFF.up} L${x-22} ${y-12} L${x} ${y-24}`],
-    C_SIT:(x,y)=>[`M${x} ${y-OFF.up} V${y-40}`],
-    C_SLANT:(x,y)=>[`M${x} ${y-OFF.up} L${x+68} ${y-34}`]
+    FLAT:(x,y)=>[`M${x+OFF.side} ${y} H${x+200}`],
+    SWING:(x,y)=>[`M${x+OFF.side} ${y} C${x+40} ${y} ${x+120} ${y-20} ${x+200} ${y-YD.y5}`],
+    WHEEL:(x,y)=>[`M${x+OFF.side} ${y} H${x+120} C${x+170} ${y-YD.y5} ${x+170} ${y-YD.y10} ${x+170} ${y-YD.y15}`],
+    CHECK:(x,y)=>[`M${x} ${y-OFF.up} L${x-28} ${y-16} L${x} ${y-32}`],
+    C_SIT:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y5}`],
+    C_SLANT:(x,y)=>[`M${x} ${y-OFF.up} L${x+90} ${y-YD.y5}`]
   };
 
   function mirroredX(x){ return ($("#mirror").value==="L") ? (600 - x) : x; }
@@ -419,7 +419,7 @@
       card.innerHTML=`
         <h3 style="margin:4px 0">${p.name}</h3>
         <div class="field-wrap"><div class="field"><div class="sideline"></div>
-          <svg viewBox="0 0 600 320">
+          <svg viewBox="0 0 600 420">
             ${svgDefs()}
             ${bubbles}
             ${routes}
