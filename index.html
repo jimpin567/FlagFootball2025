@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Flag Football — Clean Plays + Rotations (Persist + Print + Tap Assign + Export)</title>
+<style>
+  :root{
+    --bg:#0b0f14; --card:#121820; --ink:#eaf2ff; --muted:#a9b8cc; --accent:#66b2ff;
+    --field-green:#2e7d32; --field-green-dark:#1b5e20; --field-line:#e0f2f1;
+    --qb:#1e88e5; --center:#6d4c41; --wr:#f4511e; --slot:#fbc02d; --rb:#8e24aa; --flex:#26a69a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  header{padding:14px 16px;border-bottom:1px solid #1e2835}
+  h1{margin:0;font-size:18px} .sub{font-size:12px;color:var(--muted)}
+  nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  nav button{padding:8px 10px;border-radius:10px;background:#101522;border:1px solid #2a3a4f;color:var(--ink);cursor:pointer}
+  nav button.active{background:var(--accent);color:#002b55;border-color:var(--accent)}
+  main{padding:12px;max-width:1100px;margin:0 auto}
+  .panel{background:var(--card);border:1px solid #1e2835;border-radius:12px;padding:12px;margin:10px 0}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  select,input,button{background:#101522;color:var(--ink);border:1px solid #25405f;border-radius:10px;padding:10px 12px}
+  button.primary{background:var(--accent);color:#002b55;border-color:var(--accent);font-weight:700;cursor:pointer}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid #3b4d66;color:var(--muted);font-size:12px}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .muted{color:var(--muted);font-size:12px}
+  .alert{padding:8px 12px;border-radius:8px;background:#dc354520;border:1px solid #dc3545;color:#dc3545;font-size:13px;margin:8px 0}
+
+  /* Board tiles */
+  .assign{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:16px}
+  @media(min-width:520px){.assign{grid-template-columns:repeat(3,1fr)}}
+  .tile{border-radius:12px;padding:12px;border:1px solid #2a3a4f;cursor:pointer;transition:all 0.2s ease}
+  .tile:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .tile h4{margin:0 0 6px 0;font-size:14px;color:var(--muted)}
+  .big{font-size:28px;font-weight:800}
+  .role-QB{background:#1e88e520;border-color:#1f4d80}
+  .role-C{background:#6d4c4120;border-color:#5d4037}
+  .role-WR1,.role-WR2,.role-WR3{background:#f4511e20;border-color:#d84315}
+  .role-RB{background:#8e24aa20;border-color:#6a1b9a}
+  .role-Flex{background:#26a69a20;border-color:#0d6b62}
+  .tile:active{transform:scale(0.98)}
+
+  /* Field + routes */
+  .field-wrap{background:linear-gradient(180deg,var(--field-green),var(--field-green-dark));border-radius:12px;padding:8px;border:2px solid #123814}
+  .field{height:400px;position:relative;background:
+    repeating-linear-gradient(to bottom, transparent 0, transparent 38px, rgba(255,255,255,.12) 38px, rgba(255,255,255,.12) 40px);
+    border-radius:10px}
+  .sideline{position:absolute;inset:0;box-shadow:inset 0 0 0 3px var(--field-line);border-radius:10px}
+  svg{width:100%;height:100%;display:block}
+  .player{stroke:#0008;stroke-width:1.2px}
+  .bubble{font-size:14px;font-weight:800;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:1.5px}
+  .role-lbl{font-size:10px;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:.6px}
+  .route{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+  .route.alt{stroke:#ffeb3b;marker-end:url(#arrowAlt)}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:10px}
+  @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{border:1px solid #2a3a4f;padding:6px;text-align:center}
+  th{background:#101522}
+
+  /* Modal styles */
+  .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:none;justify-content:center;align-items:center;z-index:1000}
+  .modal.show{display:flex}
+  .modal-content{background:var(--card);border:1px solid #1e2835;border-radius:12px;padding:20px;max-width:400px;width:90%}
+  .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .modal-title{margin:0;font-size:18px}
+  .modal-close{background:none;border:none;color:var(--muted);font-size:24px;cursor:pointer;padding:0}
+
+  /* Print stylesheet */
+  @media print{
+    :root{ --bg:#fff; --card:#fff; --ink:#000; --muted:#333; }
+    body{ background:#fff; color:#000; }
+    header, nav, .controls, details, #board, #tips { display:none !important; }
+    #plays, #rotations{ display:block !important; border:none; }
+    .panel{ border:1px solid #0002; box-shadow:none; }
+    .grid{ grid-template-columns:1fr !important; }
+    #playGrid .panel{ page-break-inside:avoid; margin:0 0 18px 0; }
+    .field{ height:520px; }
+    .bubble{ fill:#000; stroke:#fff; }
+    .role-lbl{ fill:#000; stroke:#fff; }
+    .export{ display:none !important; }
+    .modal{ display:none !important; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Flag Football — Clean Plays + Rotations</h1>
+  <div class="sub">Rosters: 7–10 • Formats: 5v5 / 6v6 / 7v7 • Bench-group subs • 10 plays</div>
+  <nav>
+    <button class="tab active" data-tab="board" aria-controls="board" aria-selected="true">Board</button>
+    <button class="tab" data-tab="plays" aria-controls="plays">Plays</button>
+    <button class="tab" data-tab="custom" aria-controls="custom">Custom</button>
+    <button class="tab" data-tab="rotations" aria-controls="rotations">Rotations</button>
+    <button class="tab" data-tab="tips" aria-controls="tips">Tips</button>
+  </nav>
+</header>
+
+<main>
+  <div class="panel">
+    <div class="controls">
+      <label>Format
+        <select id="format" aria-label="Format">
+          <option value="5">5v5</option>
+          <option value="6" selected>6v6</option>
+          <option value="7">7v7</option>
+        </select>
+      </label>
+      <label>Roster
+        <select id="roster" aria-label="Roster size">
+          <option>7</option><option selected>8</option><option>9</option><option>10</option>
+        </select>
+      </label>
+      <label>Identifiers
+        <select id="idMode" aria-label="Identifier Mode">
+          <option value="number" selected>Player #</option>
+          <option value="initials">Initials</option>
+          <option value="off">Off</option>
+        </select>
+      </label>
+      <label>Mirror
+        <select id="mirror" aria-label="Mirror direction">
+          <option value="R" selected>Right</option>
+          <option value="L">Left</option>
+        </select>
+      </label>
+      <label>Tap mode
+        <select id="tapMode" aria-label="Tap mode">
+          <option value="position" selected>Swap Positions</option>
+          <option value="player">Cycle Players</option>
+        </select>
+      </label>
+      <div class="row" role="group" aria-label="Series navigation">
+        <button class="primary" id="prevBtn" aria-label="Previous series">◀ Prev</button>
+        <button class="primary" id="nextBtn" aria-label="Next series">Next ▶</button>
+      </div>
+      <div class="row" role="group" aria-label="State actions">
+        <button id="clearOverrideBtn" title="Clear override for this series">Clear Override</button>
+        <button id="resetBtn" title="Clear saved state">Reset</button>
+      </div>
+    </div>
+    <details style="margin-top:6px">
+      <summary>Optional: map player # → initials</summary>
+      <div id="initials" class="row" style="margin-top:6px"></div>
+    </details>
+    <div class="muted" id="meta" aria-live="polite">Series 1 of N • Bench this series: —</div>
+    <div id="alertBox"></div>
+  </div>
+
+  <!-- BOARD -->
+  <section id="board" class="panel">
+    <div class="assign" id="assignGrid"></div>
+    <div class="muted" id="benchRow" style="margin-top:10px">Bench: —</div>
+    <div class="muted" style="margin-top:6px">Tip: tap any position tile to swap that player with the next position (quick on-the-fly adjustment).</div>
+  </section>
+
+  <!-- CUSTOM (Play Editor) -->
+  <section id="custom" class="panel" style="display:none">
+    <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="row" style="gap:12px">
+        <button id="newCustomBtn" class="primary">+ New Play</button>
+        <button id="undoBtn" disabled>Undo</button>
+        <button id="redoBtn" disabled>Redo</button>
+        <button id="saveCustomBtn" disabled>Save</button>
+        <button id="resetCustomBtn" disabled>Reset</button>
+        <label class="row" style="gap:6px;align-items:center"><input type="checkbox" id="curveToggle"> Curve</label>
+        <label class="row" style="gap:6px;align-items:center"><input type="checkbox" id="snapToggle" checked> Snap</label>
+      </div>
+      <span class="muted">Drag the dots to shape routes. Toggle <b>Curve</b> for bend handles; <b>Snap</b> aligns to yard grid.</span>
+    </div>
+    <div class="field-wrap"><div class="field"><div class="sideline"></div>
+      <svg id="customSvg" viewBox="0 0 600 400" style="touch-action:none"></svg>
+    </div></div>
+
+    <div style="margin-top:10px">
+      <h3 style="margin:4px 0">My Plays</h3>
+      <div class="row" style="gap:8px;margin-bottom:8px">
+        <button id="customAllSVG" class="export" title="Export all custom plays as individual SVG files">Export Custom (SVG)</button>
+        <button id="customAllPDF" class="export" title="PDF with all custom plays">Export Custom (PDF)</button>
+      </div>
+      <div id="myPlaysGrid" class="grid"></div>
+    </div>
+  </section>
+
+  <!-- PLAYS -->
+  <section id="plays" class="panel" style="display:none">
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <span class="pill">10 plays • Hitch/Slant/Out/Post/Corner/Fly + RB Flat/Swing/Wheel/Check</span>
+      <div class="row" style="gap:8px">
+        <button id="exportAllSVG" class="export" title="Export all built-in plays as individual SVG files">Export All (SVG)</button>
+        <button id="playbookPDF" class="export" title="Complete Playbook PDF (Built-in + Custom + Rotations)">Playbook PDF</button>
+      </div>
+    </div>
+    <div class="grid" id="playGrid"></div>
+  </section>
+
+  <!-- ROTATIONS -->
+  <section id="rotations" class="panel" style="display:none">
+    <h3>Equal-time Rotation (Bench-Group Subs)</h3>
+    <div class="muted" style="margin-bottom:6px">
+      Bench count = roster − on-field. Those players sit together and groups cycle. Active positions rotate so everyone gets QB.
+    </div>
+    <div id="rotationTable"></div>
+  </section>
+
+  <!-- TIPS -->
+  <section id="tips" class="panel" style="display:none">
+    <h3>Game Management</h3>
+    <ul>
+      <li><b>Series flow:</b> Same series plays both ways. On change of possession, tap <b>Next ▶</b> to sub the next bench group.</li>
+      <li><b>Position rotation:</b> Kids rotate through all positions including QB for equal playing time.</li>
+      <li><b>Mirror:</b> Flip left/right without changing assignments.</li>
+      <li><b>Simple calls:</b> Use position names kids understand: QB, Center, WR1, WR2, WR3, RB.</li>
+    </ul>
+  </section>
+</main>
+
+<!-- Modal for play naming -->
+<div id="nameModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Name Your Play</h3>
+      <button class="modal-close" aria-label="Close">&times;</button>
+    </div>
+    <div>
+      <input type="text" id="playNameInput" placeholder="Enter play name" style="width:100%;margin-bottom:12px">
+      <div class="row" style="justify-content:flex-end;gap:8px">
+        <button id="cancelName">Cancel</button>
+        <button id="confirmName" class="primary">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const $ = s=>document.querySelector(s);
+  const $$ = s=>Array.from(document.querySelectorAll(s));
+
+  /* ===== Utility Functions ===== */
+  function showAlert(message, type = 'error') {
+    const alertBox = $('#alertBox');
+    alertBox.innerHTML = `<div class="alert">${message}</div>`;
+    setTimeout(() => alertBox.innerHTML = '', 5000);
+  }
+
+  function validateState(state) {
+    const errors = [];
+    
+    if (!state.format || ![5,6,7].includes(state.format)) {
+      errors.push('Invalid format');
+    }
+    
+    if (!state.roster || state.roster < state.format || state.roster > 10) {
+      errors.push('Invalid roster size');
+    }
+    
+    if (state.series && (state.series < 1 || isNaN(state.series))) {
+      errors.push('Invalid series number');
+    }
+    
+    return errors;
+  }
+
+  /* ===== State Management (localStorage) ===== */
+  const STORE_KEY = 'ffg_state_v3';
+  const defaultState = { 
+    format: 6, 
+    roster: 8, 
+    idMode: 'number', 
+    mirror: 'R', 
+    series: 1, 
+    initials: {}, 
+    overrides: {}, 
+    tapMode: 'position', 
+    playsCustom: [], 
+    backups: [] 
+  };
+
+  function loadState() { 
+    try { 
+      const stored = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+      const state = { ...defaultState, ...stored };
+      
+      const errors = validateState(state);
+      if (errors.length > 0) {
+        console.warn('State validation errors:', errors);
+        return { ...defaultState };
+      }
+      
+      return state;
+    } catch (e) { 
+      console.error('Failed to load state:', e);
+      showAlert('Failed to load saved state. Using defaults.');
+      return { ...defaultState }; 
+    } 
+  }
+
+  function saveState(patch = {}) { 
+    try {
+      const currentState = loadState();
+      const newState = { ...currentState, ...patch };
+      
+      const errors = validateState(newState);
+      if (errors.length > 0) {
+        console.warn('Cannot save invalid state:', errors);
+        showAlert('Invalid configuration detected. Changes not saved.');
+        return currentState;
+      }
+      
+      localStorage.setItem(STORE_KEY, JSON.stringify(newState)); 
+      return newState;
+    } catch (e) {
+      console.error('Failed to save state:', e);
+      showAlert('Failed to save changes.');
+      return loadState();
+    }
+  }
+
+  /* ===== Play Definitions - Data-driven approach ===== */
+  const PLAY_DEFINITIONS = {
+    'Single Set 2': { WR1: 'OUT10', C: 'C_SIT', WR3: 'SLANT', WR2: 'CORNER', RB: 'FLAT' },
+    'Double Back 1': { WR1: 'OUT10', C: 'C_SIT', WR3: 'CROSS_BEHIND', WR2: 'CORNER', RB: 'SWING' },
+    'Double Back 3': { WR1: 'FLY', C: 'C_SLANT', WR3: 'SLANT', WR2: 'OUT10', RB: 'FLAT' },
+    'Smash': { WR1: 'HITCH', WR3: 'CORNER', WR2: 'HITCH', RB: 'FLAT', C: 'C_SIT' },
+    'Flood': { WR2: 'CORNER', WR3: 'OUT10', RB: 'FLAT', WR1: 'SLANT', C: 'C_SIT' },
+    'Quick Slants': { WR1: 'SLANT', WR3: 'SLANT', WR2: 'SLANT', C: 'C_SIT', RB: 'CHECK' },
+    'Levels': { WR1: 'POST', WR3: 'OUT10', RB: 'FLAT', WR2: 'FLY', C: 'C_SIT' },
+    'Drive': { WR1: 'SLANT', WR3: 'OUT10', WR2: 'POST', RB: 'SWING', C: 'C_SIT' },
+    'Wheel Shot': { WR1: 'OUT10', WR3: 'SLANT', WR2: 'FLY', RB: 'WHEEL', C: 'C_SIT' },
+    'Stick': { WR1: 'HITCH', WR3: 'OUT10', WR2: 'CORNER', RB: 'FLAT', C: 'C_SIT' }
+  };
+
+  /* ===== Base positions ===== */
+  const POS_BASE = [
+    {key:'QB',   displayName:'QB',   color:'var(--qb)',    x:300, y:340},
+    {key:'C',    displayName:'C',    color:'var(--center)',x:300, y:300},
+    {key:'WR1',  displayName:'WR1',  color:'var(--wr)',    x:150, y:300},
+    {key:'WR2',  displayName:'WR2',  color:'var(--wr)',    x:450, y:300},
+    {key:'WR3',  displayName:'WR3',  color:'var(--slot)',  x:220, y:320},
+    {key:'RB',   displayName:'RB',   color:'var(--rb)',    x:380, y:320},
+    {key:'Flex', displayName:'Flex', color:'var(--flex)',  x:300, y:270}
+  ];
+
+  const mirroredX = (x)=> ( $('#mirror').value === 'L' ? (600 - x) : x );
+  const P = (key)=> { const p = POS_BASE.find(pp=>pp.key===key); return {...p, x: mirroredX(p.x)}; };
+
+  /* ===== Routes ===== */
+  const OFF = { up:20, side:20 };
+  const YD = { y5:50, y10:100, y15:150, y20:200 };
+  const R = {
+    HITCH:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y10} L${x-25} ${y-YD.y10+20}`],
+    SLANT:(x,y)=>[`M${x+OFF.side} ${y} L${x+120} ${y-80}`],
+    OUT10:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y10} H${x+150}`],
+    POST:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y10} L${x+100} ${y-YD.y20}`],
+    CORNER:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y10} L${x+100} ${y-YD.y5}`],
+    FLY:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y20}`],
+    FLAT:(x,y)=>[`M${x+OFF.side} ${y} H${x+160}`],
+    SWING:(x,y)=>[`M${x+OFF.side} ${y} C${x+40} ${y} ${x+100} ${y-20} ${x+180} ${y-40}`],
+    WHEEL:(x,y)=>[`M${x+OFF.side} ${y} H${x+100} C${x+140} ${y-20} ${x+140} ${y-80} ${x+140} ${y-YD.y15}`],
+    CHECK:(x,y)=>[`M${x} ${y-OFF.up} L${x-25} ${y-25} L${x} ${y-40}`],
+    C_SIT:(x,y)=>[`M${x} ${y-OFF.up} V${y-60}`],
+    C_SLANT:(x,y)=>[`M${x} ${y-OFF.up} L${x+80} ${y-60}`],
+    CROSS_BEHIND:(x,y)=>[`M${x-OFF.side} ${y} C${x-60} ${y+20} ${x} ${y+40} ${x+160} ${y+40}`]
+  };
+  const segs = (routeFn, key)=> { const {x,y} = P(key); return routeFn(x,y); };
+
+  /* ===== Improved Play Rendering ===== */
+  function renderPlay(playDef, fmt) {
+    const formatKeys = keysForFormat(fmt);
+    const routes = [];
+    
+    Object.entries(playDef).forEach(([pos, route], index) => {
+      if (formatKeys.includes(pos) && R[route]) {
+        const paths = segs(R[route], pos);
+        paths.forEach(d => {
+          routes.push(`<path d="${d}" class="route${index%2?' alt':''}"></path>`);
+        });
+      }
+    });
+    
+    return routes.join('');
+  }
+
+  /* ===== SVG defs ===== */
+  function svgDefs(){
+    return `
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="8" refX="5" refY="4" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,8 L8,4 z" fill="#ffffff" stroke="#000" stroke-width="0.5"></path>
+        </marker>
+        <marker id="arrowAlt" markerWidth="8" markerHeight="8" refX="5" refY="4" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,8 L8,4 z" fill="#ffeb3b" stroke="#000" stroke-width="0.5"></path>
+        </marker>
+      </defs>
+    `;
+  }
+
+  /* ===== Rotation logic with memoization ===== */
+  const rotationCache = new Map();
+  
+  function keysForFormat(fmt){ 
+    if(fmt==5) return ['QB','C','WR1','WR2','RB']; 
+    if(fmt==6) return ['QB','C','WR1','WR2','WR3','RB']; 
+    return ['QB','C','WR1','WR2','WR3','RB','Flex']; 
+  }
+  
+  function rotationRows(roster, fmt){
+    const cacheKey = `${roster}-${fmt}`;
+    if (rotationCache.has(cacheKey)) {
+      return rotationCache.get(cacheKey);
+    }
+    
+    const keys = keysForFormat(fmt);
+    const on = keys.length;
+    const benchCount = Math.max(0, roster - on);
+    const players = Array.from({length: roster}, (_,i)=> i+1);
+    const groups = [];
+    
+    if(benchCount===0){ 
+      groups.push([]); 
+    } else { 
+      for(let i=0;i<roster;i+=benchCount) groups.push(players.slice(i, i+benchCount)); 
+    }
+    
+    const G = groups.length;
+    const rows = [];
+    const totalSeries = Math.max(roster, G);
+    
+    for(let s=0; s<totalSeries; s++){
+      const bench = groups[s % G];
+      const active = players.filter(p=> !bench.includes(p));
+      const rotated = active.map((_,i)=> active[(i + s) % active.length]);
+      const lineup = {}; 
+      for(let i=0;i<keys.length;i++) lineup[keys[i]] = rotated[i];
+      rows.push({series:s+1, lineup, bench:[...bench]});
+    }
+    
+    rotationCache.set(cacheKey, rows);
+    return rows;
+  }
+
+  /* ===== UI helpers ===== */
+  function buildInitials(){
+    const n = parseInt($('#roster').value,10);
+    const box = $('#initials'); box.innerHTML='';
+    const state = loadState();
+    for(let i=1;i<=n;i++){
+      const inp=document.createElement('input');
+      inp.placeholder='#'+i+' ABC'; inp.id='init-'+i; inp.maxLength=3; inp.style.width='78px';
+      inp.value = (state.initials && state.initials[i]) ? state.initials[i] : '';
+      inp.addEventListener('input', ()=>{
+        const cur = loadState();
+        cur.initials = cur.initials || {}; cur.initials[i] = inp.value.toUpperCase().slice(0,3);
+        saveState(cur); renderAll();
+      });
+      box.appendChild(inp);
+    }
+  }
+  
+  function initialsMap(){ 
+    const n = parseInt($('#roster').value,10), map={}; 
+    for(let i=1;i<=n;i++){ 
+      const input = $('#init-'+i);
+      map[i] = input ? input.value.toUpperCase().slice(0,3) : '';
+    } 
+    return map; 
+  }
+  
+  function playerBubble(posKey, label){ 
+    const p = P(posKey); 
+    const displayLabel = p.displayName; 
+    return `
+      <circle cx="${p.x}" cy="${p.y}" r="16" class="player" fill="${p.color}"></circle>
+      <text x="${p.x}" y="${p.y+4}" text-anchor="middle" class="bubble">${label}</text>
+      <text x="${p.x}" y="${p.y+18}" text-anchor="middle" class="role-lbl">${displayLabel}</text>
+    `; 
+  }
+
+  let currentSeries = 1;
+  function currentRows(){ const fmt = parseInt($('#format').value,10); const roster = parseInt($('#roster').value,10); return rotationRows(roster, fmt); }
+  function clampSeries(){ const rows = currentRows(); if(currentSeries>rows.length) currentSeries=1; if(currentSeries<1) currentSeries=rows.length; }
+
+  function lineupForSeries(row){
+    const st = loadState();
+    const ov = st.overrides && st.overrides[String(currentSeries)];
+    if(!ov) return row.lineup;
+    const fmt = parseInt($('#format').value,10); const keys = keysForFormat(fmt);
+    const same = keys.every(k=>Object.prototype.hasOwnProperty.call(ov,k));
+    return same ? ov : row.lineup;
+  }
+
+  /* ===== Modal Functions ===== */
+  function showModal(modalId) {
+    const modal = $('#' + modalId);
+    if (modal) {
+      modal.classList.add('show');
+      const input = modal.querySelector('input[type="text"]');
+      if (input) {
+        setTimeout(() => input.focus(), 100);
+      }
+    }
+  }
+
+  function hideModal(modalId) {
+    const modal = $('#' + modalId);
+    if (modal) {
+      modal.classList.remove('show');
+    }
+  }
+
+  /* ===== Renderers ===== */
+  function renderBoard(){
+    try {
+      const fmt = parseInt($('#format').value,10);
+      const roster = parseInt($('#roster').value,10);
+      const idMode = $('#idMode').value;
+      const init = initialsMap();
+      const rows = rotationRows(roster, fmt);
+      if(currentSeries>rows.length) currentSeries=1;
+      const baseRow = rows[currentSeries-1];
+      const lineup = lineupForSeries(baseRow);
+      $('#meta').textContent = `Series ${currentSeries} of ${rows.length} • Bench this series: ${baseRow.bench.join(', ')||'—'}`;
+
+      const grid=$('#assignGrid'); grid.innerHTML='';
+      keysForFormat(fmt).forEach(pos=>{
+        const num=lineup[pos];
+        const label=(idMode==='initials' && init[num])? init[num] : (idMode==='off'?'':num);
+        const p = POS_BASE.find(pp=>pp.key===pos);
+        const tile=document.createElement('div');
+        tile.className='tile role-'+pos; tile.dataset.pos=pos; tile.setAttribute('data-pos',pos);
+        tile.innerHTML=`<h4>${p.displayName}</h4><div class="big">${label}</div>`;
+        grid.appendChild(tile);
+      });
+      $('#benchRow').textContent = baseRow.bench.length ? 'Bench: '+baseRow.bench.join(', ') : 'Bench: —';
+    } catch (error) {
+      console.error('Error rendering board:', error);
+      showAlert('Error displaying board. Please refresh the page.');
+    }
+  }
+
+  function renderPlays(){
+    try {
+      const fmt = parseInt($('#format').value,10);
+      const idMode = $('#idMode').value;
+      const init = initialsMap();
+      const rows = currentRows(); clampSeries(); const row = rows[currentSeries-1];
+      const lineup = lineupForSeries(row);
+
+      const grid=$('#playGrid'); grid.innerHTML='';
+      Object.entries(PLAY_DEFINITIONS).forEach(([name, playDef]) => {
+        const bubbles = keysForFormat(fmt).map(k=>{
+          const num = lineup[k];
+          const label=(idMode==='initials' && init[num])? init[num] : (idMode==='off'?'':num);
+          return playerBubble(k,label);
+        }).join('');
+        const routes = renderPlay(playDef, fmt);
+        const card=document.createElement('div');
+        card.className='panel';
+        card.innerHTML=`
+          <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px">
+            <h3 style="margin:4px 0">${name}</h3>
+            <button class="export" data-name="${name}" title="Export this play as PNG">Export PNG</button>
+          </div>
+          <div class="field-wrap"><div class="field"><div class="sideline"></div>
+            <svg viewBox="0 0 600 400">
+              ${svgDefs()}
+              ${bubbles}
+              ${routes}
+            </svg>
+          </div></div>
+        `;
+        grid.appendChild(card);
+      });
+    } catch (error) {
+      console.error('Error rendering plays:', error);
+      showAlert('Error displaying plays. Please refresh the page.');
+    }
+  }
+
+  function renderRotation(){
+    try {
+      const fmt = parseInt($('#format').value,10);
+      const rows = currentRows();
+      const pkeys = keysForFormat(fmt);
+      const displayNames = pkeys.map(k=>POS_BASE.find(p=>p.key===k).displayName);
+      let html = `<table><thead><tr><th>Series</th>${displayNames.map(p=>`<th>${p}</th>`).join('')}<th>Bench</th></tr></thead><tbody>`;
+      rows.forEach(r=>{ html += `<tr><td>${r.series}</td>${pkeys.map(p=>`<td>${r.lineup[p]||''}</td>`).join('')}<td>${r.bench.join(', ')||'-'}</td></tr>`; });
+      html += `</tbody></table>`;
+      $('#rotationTable').innerHTML=html;
+    } catch (error) {
+      console.error('Error rendering rotation:', error);
+      showAlert('Error displaying rotations. Please refresh the page.');
+    }
+  }
+
+  function renderAll(){ 
+    try {
+      renderBoard(); 
+      renderPlays(); 
+      renderRotation(); 
+    } catch (error) {
+      console.error('Error in renderAll:', error);
+      showAlert('Error updating display. Some features may not work correctly.');
+    }
+  }
+
+  /* ===== Tabs ===== */
+  $('.tab').forEach(btn=>btn.addEventListener('click', ()=>{
+    $('.tab').forEach(b=>{ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+    btn.classList.add('active'); btn.setAttribute('aria-selected','true');
+    ['board','plays','custom','rotations','tips'].forEach(id=>$('#'+id).style.display='none');
+    $('#'+btn.dataset.tab).style.display='block';
+    if(btn.dataset.tab==='rotations') renderRotation();
+    if(btn.dataset.tab==='plays') renderPlays();
+    if(btn.dataset.tab==='board') renderBoard();
+    if(btn.dataset.tab==='custom') renderCustomTab();
+  }));
+
+  /* ===== Controls with improved error handling ===== */
+  $('#format').addEventListener('change', ()=>{ 
+    rotationCache.clear();
+    currentSeries=1; 
+    const newFormat = parseInt($('#format').value,10);
+    saveState({format:newFormat, overrides:{}}); 
+    renderAll(); 
+  });
+  
+  $('#roster').addEventListener('change', ()=>{ 
+    rotationCache.clear();
+    buildInitials(); 
+    currentSeries=1; 
+    const newRoster = parseInt($('#roster').value,10);
+    saveState({roster:newRoster, overrides:{}}); 
+    renderAll(); 
+  });
+  
+  $('#idMode').addEventListener('change', ()=>{ saveState({idMode:$('#idMode').value}); renderAll(); });
+  $('#mirror').addEventListener('change', ()=>{ saveState({mirror:$('#mirror').value}); renderAll(); });
+  $('#nextBtn').addEventListener('click', ()=>{ currentSeries++; clampSeries(); const st=loadState(); st.series=currentSeries; saveState(st); renderAll(); });
+  $('#prevBtn').addEventListener('click', ()=>{ currentSeries--; clampSeries(); const st=loadState(); st.series=currentSeries; saveState(st); renderAll(); });
+  $('#resetBtn').addEventListener('click', ()=>{ 
+    if (confirm('This will clear all saved data. Are you sure?')) {
+      localStorage.removeItem(STORE_KEY); 
+      rotationCache.clear();
+      location.reload(); 
+    }
+  });
+  $('#clearOverrideBtn').addEventListener('click', ()=>{ const st = loadState(); if(st.overrides){ delete st.overrides[String(currentSeries)]; saveState(st); } renderAll(); });
+  $('#tapMode').addEventListener('change', ()=>{ const st=loadState(); st.tapMode=$('#tapMode').value; saveState(st); });
+  
+  // Keyboard shortcuts
+  window.addEventListener('keydown', (e)=>{
+    if(e.target.tagName === 'INPUT') return; // Don't interfere with input fields
+    if(e.key==='ArrowRight'){ e.preventDefault(); $('#nextBtn').click(); }
+    if(e.key==='ArrowLeft'){ e.preventDefault(); $('#prevBtn').click(); }
+    if(e.key.toLowerCase()==='m'){ e.preventDefault(); const sel=$('#mirror'); sel.value = sel.value==='L' ? 'R' : 'L'; saveState({mirror:sel.value}); renderAll(); }
+  });
+
+  // Tap-to-assign: behavior depends on tapMode
+  $('#assignGrid').addEventListener('click', (e)=>{
+    try {
+      const tile = e.target.closest('.tile'); if(!tile) return;
+      const pos = tile.getAttribute('data-pos'); if(!pos) return;
+      const fmt = parseInt($('#format').value,10); const pkeys = keysForFormat(fmt);
+      const rows = currentRows(); clampSeries(); const baseRow = rows[currentSeries-1];
+      const cur = {...lineupForSeries(baseRow)};
+      const mode = (loadState().tapMode)||'position';
+      
+      if(mode==='position'){
+        const i = pkeys.indexOf(pos); const j = (i+1)%pkeys.length; const pos2 = pkeys[j];
+        const tmp = cur[pos]; cur[pos] = cur[pos2]; cur[pos2] = tmp;
+      } else {
+        const roster = parseInt($('#roster').value,10);
+        const activeList = Array.from({length: roster}, (_,i)=>i+1).filter(n=>!baseRow.bench.includes(n));
+        const currentPlayer = cur[pos];
+        const idx = activeList.indexOf(currentPlayer);
+        const nextPlayer = activeList[(idx+1) % activeList.length];
+        const pos2 = pkeys.find(k=>cur[k]===nextPlayer);
+        if(pos2){ const tmp = cur[pos]; cur[pos] = cur[pos2]; cur[pos2] = tmp; }
+      }
+      
+      const st = loadState(); st.overrides = st.overrides || {}; st.overrides[String(currentSeries)] = cur; saveState(st);
+      renderAll();
+    } catch (error) {
+      console.error('Error in tap-to-assign:', error);
+      showAlert('Error swapping players. Please try again.');
+    }
+  });
+
+  // Print hooks
+  window.addEventListener('beforeprint', ()=>{ renderPlays(); renderRotation(); });
+
+  /* ===== Export helpers with improved error handling ===== */
+  function exportCardPNG(card, name){
+    try {
+      const svg = card.querySelector('svg'); 
+      if(!svg) {
+        showAlert('No play diagram found to export.');
+        return;
+      }
+      
+      const xml = new XMLSerializer().serializeToString(svg);
+      const img = new Image();
+      const svg64 = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(xml);
+      
+      img.onload = ()=>{
+        try {
+          const vb = svg.viewBox.baseVal; const w = vb && vb.width ? vb.width : 600; const h = vb && vb.height ? vb.height : 400;
+          const scale = 2; const canvas = document.createElement('canvas'); canvas.width = w*scale; canvas.height = h*scale;
+          const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const a = document.createElement('a'); a.download = `${name.replace(/\s+/g,'_')}.png`; a.href = canvas.toDataURL('image/png'); a.click();
+        } catch (error) {
+          console.error('PNG export failed:', error);
+          showAlert('Failed to export PNG. Please try again.');
+        }
+      };
+      
+      img.onerror = () => {
+        showAlert('Failed to process image for export.');
+      };
+      
+      img.src = svg64;
+    } catch (error) {
+      console.error('Export preparation failed:', error);
+      showAlert('Export failed. Please try again.');
+    }
+  }
+  
+  function downloadSVG(svg, name){
+    try {
+      const xml = new XMLSerializer().serializeToString(svg);
+      const blob = new Blob([xml], {type:'image/svg+xml'});
+      const a = document.createElement('a'); 
+      a.href = URL.createObjectURL(blob); 
+      a.download = `${name.replace(/\s+/g,'_')}.svg`; 
+      a.click();
+      setTimeout(()=>URL.revokeObjectURL(a.href), 3000);
+    } catch (error) {
+      console.error('SVG download failed:', error);
+      showAlert('Failed to export SVG. Please try again.');
+    }
+  }
+  
+  function exportAllSVGs(){
+    try {
+      renderPlays();
+      const cards = Array.from(document.querySelectorAll('#playGrid .panel'));
+      if (cards.length === 0) {
+        showAlert('No plays found to export.');
+        return;
+      }
+      
+      for(const card of cards){
+        const name = (card.querySelector('h3')?.textContent||'play');
+        const svg = card.querySelector('svg'); if(!svg) continue;
+        downloadSVG(svg, name);
+      }
+    } catch (error) {
+      console.error('Bulk SVG export failed:', error);
+      showAlert('Failed to export all SVGs. Some may have been saved.');
+    }
+  }
+
+  // Custom helpers
+  function buildCustomSVGNode(p){
+    try {
+      const wrap = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      wrap.setAttribute('viewBox','0 0 600 400');
+      wrap.innerHTML = svgDefs() +
+        keysForFormat(p.fmt).map(k=>{ const pp=P(k); return `<circle cx="${pp.x}" cy="${pp.y}" r="16" class="player" fill="${pp.color}"></circle><text x="${pp.x}" y="${pp.y+18}" text-anchor="middle" class="role-lbl">${pp.displayName}</text>`; }).join('') +
+        keysForFormat(p.fmt).map((k,i)=>{ const pp=P(k); const e=p.routes[k].end; const c=p.routes[k].ctrl; const d = (c?`M${pp.x} ${pp.y} Q${c.x} ${c.y} ${e.x} ${e.y}`:`M${pp.x} ${pp.y} L${e.x} ${e.y}`); return `<path d="${d}" class="route${i%2?' alt':''}"></path>`; }).join('');
+      return wrap;
+    } catch (error) {
+      console.error('Error building custom SVG:', error);
+      return null;
+    }
+  }
+  
+  function exportCustomAllSVGs(){
+    try {
+      const st = loadState(); const list = st.playsCustom||[]; 
+      if(!list.length){ 
+        showAlert('No custom plays to export.'); 
+        return; 
+      }
+      list.forEach(p=>{ 
+        const svg = buildCustomSVGNode(p); 
+        if (svg) {
+          downloadSVG(svg, p.name||'custom_play'); 
+        }
+      });
+    } catch (error) {
+      console.error('Custom export failed:', error);
+      showAlert('Failed to export custom plays.');
+    }
+  }
+  
+  function buildRotationTableHTML(){
+    const fmt = parseInt($('#format').value,10);
+    const roster = parseInt($('#roster').value,10);
+    const rows = rotationRows(roster, fmt);
+    const pkeys = keysForFormat(fmt);
+    const displayNames = pkeys.map(k=>POS_BASE.find(p=>p.key===k).displayName);
+    let html = `<table class="table"><thead><tr><th>Series</th>${displayNames.map(p=>`<th>${p}</th>`).join("")}<th>Bench</th></tr></thead><tbody>`;
+    rows.forEach(r=>{ html += `<tr><td>${r.series}</td>${pkeys.map(p=>`<td>${r.lineup[p]||""}</td>`).join("")}<td>${r.bench.join(", ")||"-"}</td></tr>`; });
+    html += `</tbody></table>`;
+    return html;
+  }
+  
+  function generatePlaybookPDF(){
+    try {
+      renderPlays(); // ensure latest
+      const builtInCards = Array.from(document.querySelectorAll('#playGrid .panel'));
+      const st = loadState(); const customList = st.playsCustom||[];
+      const style = `<style>@page{margin:12mm} body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif} h2{margin:0 0 8px 0;font-size:18px} h3{margin:0 0 6px 0;font-size:16px} .page{page-break-after:always} .wrap{border:1px solid #ddd;border-radius:8px;padding:8px} .table{width:100%;border-collapse:collapse;font-size:12px} .table th,.table td{border:1px solid #bbb;padding:4px;text-align:center} .section{margin-bottom:10px}</style>`;
+      let html = `<!doctype html><html><head><meta charset='utf-8'>${style}</head><body>`;
+
+      if(builtInCards.length){
+        html += `<div class='section'><h2>Built-in Plays</h2></div>`;
+        builtInCards.forEach(card=>{
+          const name = card.querySelector('h3')?.textContent || 'Play';
+          const svg = card.querySelector('svg'); if(!svg) return;
+          html += `<div class='page'><h3>${name}</h3><div class='wrap'>${new XMLSerializer().serializeToString(svg)}</div></div>`;
+        });
+      }
+
+      if(customList.length){
+        html += `<div class='section'><h2>Custom Plays</h2></div>`;
+        customList.forEach(p=>{
+          const svgNode = buildCustomSVGNode(p);
+          if (!svgNode) return;
+          const svgStr = new XMLSerializer().serializeToString(svgNode);
+          const date = new Date(parseInt(p.id?.slice(1) || Date.now(),10));
+          const meta = isNaN(date.getTime()) ? '' : ` <span style='color:#666;font-size:12px'>Saved ${date.toLocaleDateString()}</span>`;
+          html += `<div class='page'><h3>${p.name} <span style='font-weight:600;font-size:12px;vertical-align:middle;border:1px solid #999;border-radius:6px;padding:1px 6px;margin-left:6px'>Custom</span>${meta}</h3><div class='wrap'>${svgStr}</div></div>`;
+        });
+      }
+
+      const rotHtml = buildRotationTableHTML();
+      if(rotHtml){
+        html += `<div class='section'><h2>Rotations</h2></div><div class='page'>${rotHtml}</div>`;
+      }
+
+      html += `<script>window.onload=function(){setTimeout(()=>window.print(),200)}<\/script></body></html>`;
+      const w = window.open('','_blank'); 
+      if(!w){ 
+        showAlert('Please allow pop-ups to generate the PDF.'); 
+        return; 
+      }
+      w.document.open(); w.document.write(html); w.document.close();
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      showAlert('Failed to generate PDF. Please try again.');
+    }
+  }
+  
+  function exportCustomPDF(){
+    try {
+      const st = loadState(); const list = st.playsCustom||[]; 
+      if(!list.length){ 
+        showAlert('No custom plays to include.'); 
+        return; 
+      }
+      const style = `<style>@page{margin:12mm} body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif} h3{margin:0 0 6px 0;font-size:16px} .page{page-break-after:always} .wrap{border:1px solid #ddd;border-radius:8px;padding:8px}</style>`;
+      let html = `<!doctype html><html><head><meta charset='utf-8'>${style}</head><body>`;
+      list.forEach(p=>{
+        const svgNode = buildCustomSVGNode(p);
+        if (!svgNode) return;
+        const svgStr = new XMLSerializer().serializeToString(svgNode);
+        html += `<div class='page'><h3>${p.name}</h3><div class='wrap'>${svgStr}</div></div>`;
+      });
+      html += `<script>window.onload=function(){setTimeout(()=>window.print(),200)}<\/script></body></html>`;
+      const w = window.open('','_blank'); 
+      if(!w){ 
+        showAlert('Please allow pop-ups to generate the PDF.'); 
+        return; 
+      }
+      w.document.open(); w.document.write(html); w.document.close();
+    } catch (error) {
+      console.error('Custom PDF generation failed:', error);
+      showAlert('Failed to generate custom PDF.');
+    }
+  }
+
+  // Click wiring (exports + per-card PNG)
+  document.addEventListener('click', (e)=>{
+    if(e.target && e.target.matches('#exportAllSVG')){ exportAllSVGs(); }
+    if(e.target && e.target.matches('#playbookPDF')){ generatePlaybookPDF(); }
+    if(e.target && e.target.matches('#customAllSVG')){ exportCustomAllSVGs(); }
+    if(e.target && e.target.matches('#customAllPDF')){ exportCustomPDF(); }
+    const btn = e.target && e.target.closest('button.export[data-name]');
+    if(btn){ const card = btn.closest('.panel'); exportCardPNG(card, btn.dataset.name || 'play'); }
+  });
+
+  /* ===== Custom Play Editor (Basic + Undo/Redo + Curve + Snap) ===== */
+  let editor = { active:false, fmt:6, routes:{}, history:[], future:[], curve:false, snap:true };
+
+  function editorDefaultRoutes(fmt){
+    const keys = keysForFormat(fmt);
+    const out = {};
+    keys.forEach(k=>{
+      const {x,y} = P(k);
+      const end = {x, y:y-120};
+      const ctrl = {x:(x+end.x)/2, y:(y+end.y)/2 - 20}; // gentle up bend default
+      out[k] = { end, ctrl };
+    });
+    return out;
+  }
+  
+  function pushHistory(){ 
+    editor.history.push(JSON.stringify(editor.routes)); 
+    if(editor.history.length>50) editor.history.shift(); 
+    editor.future=[]; 
+    updateUndoRedo(); 
+  }
+  
+  function applySnapshot(json){ 
+    try {
+      editor.routes = JSON.parse(json); 
+      renderEditorSVG(); 
+      updateUndoRedo(); 
+    } catch (error) {
+      console.error('Failed to apply snapshot:', error);
+      showAlert('Failed to undo/redo. Editor may be in an inconsistent state.');
+    }
+  }
+  
+  function updateUndoRedo(){ 
+    $('#undoBtn').disabled = editor.history.length===0; 
+    $('#redoBtn').disabled = editor.future.length===0; 
+    $('#saveCustomBtn').disabled = !editor.active; 
+    $('#resetCustomBtn').disabled = !editor.active; 
+  }
+
+  function renderEditorSVG(){
+    try {
+      const svg = $('#customSvg'); if(!svg) return; svg.innerHTML = svgDefs();
+      const fmt = editor.fmt; const keys = keysForFormat(fmt);
+      const showCurve = editor.curve;
+
+      // players
+      const bubbles = keys.map(k=>{ const p=P(k); return `
+        <circle cx="${p.x}" cy="${p.y}" r="16" class="player" fill="${p.color}"></circle>
+        <text x="${p.x}" y="${p.y+18}" text-anchor="middle" class="role-lbl">${p.displayName}</text>
+      `; }).join('');
+
+      // routes
+      const paths = keys.map((k,i)=>{
+        const {x,y} = P(k); 
+        const route = editor.routes[k];
+        if (!route || !route.end) return '';
+        const {end, ctrl} = route;
+        const d = showCurve && ctrl ? `M${x} ${y} Q${ctrl.x} ${ctrl.y} ${end.x} ${end.y}` : `M${x} ${y} L${end.x} ${end.y}`;
+        return `<path d="${d}" class="route${i%2?' alt':''}"></path>`;
+      }).join('');
+
+      // anchors
+      const anchors = keys.map(k=>{
+        const route = editor.routes[k];
+        if (!route || !route.end) return '';
+        const {end, ctrl} = route;
+        const endNode = `<circle class="anchor" data-kind="end" data-key="${k}" cx="${end.x}" cy="${end.y}" r="7" fill="#fff" stroke="#000"></circle>`;
+        const ctrlNode = showCurve && ctrl ? `<circle class="anchor" data-kind="ctrl" data-key="${k}" cx="${ctrl.x}" cy="${ctrl.y}" r="6" fill="#ffeb3b" stroke="#000"></circle>` : '';
+        return endNode + ctrlNode;
+      }).join('');
+
+      svg.insertAdjacentHTML('beforeend', bubbles + paths + anchors);
+    } catch (error) {
+      console.error('Error rendering editor SVG:', error);
+      showAlert('Error updating play editor display.');
+    }
+  }
+
+  function enableEditor(){ 
+    editor.active=true; 
+    $('#saveCustomBtn').disabled=false; 
+    $('#resetCustomBtn').disabled=false; 
+    renderEditorSVG(); 
+    updateUndoRedo(); 
+  }
+  
+  function newCustom(){ 
+    editor.fmt = parseInt($('#format').value,10); 
+    editor.routes = editorDefaultRoutes(editor.fmt); 
+    editor.history=[]; 
+    editor.future=[]; 
+    enableEditor(); 
+  }
+  
+  function resetCustom(){ 
+    if(!editor.active) return; 
+    editor.routes = editorDefaultRoutes(editor.fmt); 
+    editor.history=[]; 
+    editor.future=[]; 
+    renderEditorSVG(); 
+    updateUndoRedo(); 
+  }
+  
+  function undo(){ 
+    if(editor.history.length===0) return; 
+    const snap = editor.history.pop(); 
+    editor.future.push(JSON.stringify(editor.routes)); 
+    applySnapshot(snap); 
+  }
+  
+  function redo(){ 
+    if(editor.future.length===0) return; 
+    const snap = editor.future.pop(); 
+    editor.history.push(JSON.stringify(editor.routes)); 
+    applySnapshot(snap); 
+  }
+
+  function snapPoint(p){ 
+    if(!editor.snap) return p; 
+    const snapSize = 50; 
+    return { 
+      x: Math.round(p.x/snapSize)*snapSize, 
+      y: Math.round(p.y/snapSize)*snapSize 
+    }; 
+  }
+
+  function onDragStart(e){
+    try {
+      const t = e.target.closest('.anchor'); if(!t) return; e.preventDefault();
+      const key = t.getAttribute('data-key'); const kind = t.getAttribute('data-kind');
+      if (!editor.routes[key]) return;
+      
+      pushHistory();
+      const pt = (evt)=>{ 
+        const rect = $('#customSvg').getBoundingClientRect(); 
+        const clientX = evt.clientX ?? evt.touches?.[0]?.clientX;
+        const clientY = evt.clientY ?? evt.touches?.[0]?.clientY;
+        if (clientX === undefined || clientY === undefined) return null;
+        
+        const cx = clientX - rect.left; 
+        const cy = clientY - rect.top; 
+        const vb = {w:600,h:400}; 
+        const rx = cx/rect.width*vb.w; 
+        const ry = cy/rect.height*vb.h; 
+        return snapPoint({x:rx,y:ry}); 
+      };
+      
+      const move = (evt)=>{ 
+        const p = pt(evt); 
+        if (!p || !editor.routes[key]) return;
+        if(kind==='end') editor.routes[key].end = p; 
+        else if (editor.routes[key].ctrl) editor.routes[key].ctrl = p; 
+        renderEditorSVG(); 
+      };
+      
+      const up = ()=>{ 
+        window.removeEventListener('mousemove',move); 
+        window.removeEventListener('touchmove',move); 
+        window.removeEventListener('mouseup',up); 
+        window.removeEventListener('touchend',up); 
+        updateUndoRedo(); 
+      };
+      
+      window.addEventListener('mousemove',move); 
+      window.addEventListener('touchmove',move,{passive:false}); 
+      window.addEventListener('mouseup',up); 
+      window.addEventListener('touchend',up);
+    } catch (error) {
+      console.error('Error in drag operation:', error);
+      showAlert('Error while dragging. Please try again.');
+    }
+  }
+  
+  $('#customSvg').addEventListener('mousedown', onDragStart);
+  $('#customSvg').addEventListener('touchstart', onDragStart, {passive:false});
+
+  function saveCustom(){ 
+    if(!editor.active) return; 
+    showModal('nameModal');
+  }
+  
+  function confirmSaveCustom() {
+    try {
+      const name = $('#playNameInput').value.trim();
+      if (!name) {
+        showAlert('Please enter a play name.');
+        return;
+      }
+      
+      const st = loadState(); 
+      st.playsCustom = st.playsCustom||[]; 
+      const id = 'c'+Date.now(); 
+      st.playsCustom.push({id, name, fmt:editor.fmt, routes:editor.routes}); 
+      saveState(st); 
+      renderMyPlays(); 
+      hideModal('nameModal');
+      $('#playNameInput').value = '';
+      showAlert(`Play "${name}" saved successfully!`, 'success');
+    } catch (error) {
+      console.error('Error saving custom play:', error);
+      showAlert('Failed to save play. Please try again.');
+    }
+  }
+  
+  function renderMyPlays(){
+    try {
+      const box = $('#myPlaysGrid'); if(!box) return; box.innerHTML='';
+      const st = loadState(); const list = st.playsCustom||[]; 
+      if(list.length===0){ 
+        box.innerHTML = '<div class="muted">No custom plays yet.</div>'; 
+        return; 
+      }
+      
+      list.forEach(p=>{
+        const panel = document.createElement('div'); panel.className='panel';
+        const paths = keysForFormat(p.fmt).map((k,i)=>{ 
+          const pp=P(k); 
+          const route = p.routes[k];
+          if (!route || !route.end) return '';
+          const e=route.end; 
+          const c=route.ctrl; 
+          const d = (c?`M${pp.x} ${pp.y} Q${c.x} ${c.y} ${e.x} ${e.y}`:`M${pp.x} ${pp.y} L${e.x} ${e.y}`); 
+          return `<path d="${d}" class="route${i%2?' alt':''}"></path>`; 
+        }).join('');
+        const players = keysForFormat(p.fmt).map(k=>{ 
+          const pp=P(k); 
+          return `<circle cx="${pp.x}" cy="${pp.y}" r="16" class="player" fill="${pp.color}"></circle><text x="${pp.x}" y="${pp.y+18}" text-anchor="middle" class="role-lbl">${pp.displayName}</text>`; 
+        }).join('');
+        
+        panel.innerHTML = `<h3 style="margin:4px 0">${p.name}</h3>
+          <div class="field-wrap"><div class="field"><div class="sideline"></div>
+            <svg viewBox="0 0 600 400">${svgDefs()}${players}${paths}</svg>
+          </div></div>
+          <div class="row" style="margin-top:6px">
+            <button class="export" data-name="${p.name}">Export PNG</button>
+            <button data-del="${p.id}">Delete</button>
+          </div>`;
+        box.appendChild(panel);
+      });
+      
+      box.addEventListener('click', (e)=>{
+        const del = e.target.closest('button[data-del]'); 
+        if(!del) return; 
+        const id = del.getAttribute('data-del');
+        if (confirm('Delete this custom play?')) {
+          const st = loadState(); 
+          st.playsCustom = (st.playsCustom||[]).filter(x=>x.id!==id); 
+          saveState(st); 
+          renderMyPlays();
+          showAlert('Play deleted.', 'success');
+        }
+      });
+    } catch (error) {
+      console.error('Error rendering custom plays:', error);
+      showAlert('Error displaying custom plays.');
+    }
+  }
+
+  function renderCustomTab(){ 
+    renderMyPlays(); 
+    if(!editor.active){ 
+      disableEditorButtons(); 
+    } 
+    $('#curveToggle').checked = editor.curve; 
+    $('#snapToggle').checked = editor.snap; 
+  }
+  
+  function disableEditorButtons(){ 
+    $('#undoBtn').disabled=true; 
+    $('#redoBtn').disabled=true; 
+    $('#saveCustomBtn').disabled=true; 
+    $('#resetCustomBtn').disabled=true; 
+  }
+
+  // Modal event listeners
+  $('#nameModal .modal-close, #cancelName').forEach(el => {
+    if (el) el.addEventListener('click', () => {
+      hideModal('nameModal');
+      $('#playNameInput').value = '';
+    });
+  });
+  
+  $('#confirmName').addEventListener('click', confirmSaveCustom);
+  
+  $('#playNameInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      confirmSaveCustom();
+    }
+  });
+
+  // Close modal on outside click
+  $('#nameModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+      hideModal('nameModal');
+      $('#playNameInput').value = '';
+    }
+  });
+
+  $('#newCustomBtn').addEventListener('click', ()=>{ newCustom(); });
+  $('#saveCustomBtn').addEventListener('click', saveCustom);
+  $('#resetCustomBtn').addEventListener('click', ()=>{ 
+    if (confirm('Reset this play to default routes?')) {
+      resetCustom(); 
+    }
+  });
+  $('#undoBtn').addEventListener('click', undo);
+  $('#redoBtn').addEventListener('click', redo);
+  $('#curveToggle').addEventListener('change', ()=>{ editor.curve = $('#curveToggle').checked; renderEditorSVG(); });
+  $('#snapToggle').addEventListener('change', ()=>{ editor.snap = $('#snapToggle').checked; });
+
+  // Init
+  (function init(){
+    try {
+      const st = loadState();
+      $('#format').value = String(st.format||6);
+      $('#roster').value = String(st.roster||8);
+      $('#idMode').value = st.idMode||'number';
+      $('#mirror').value = st.mirror||'R';
+      $('#tapMode').value = st.tapMode||'position';
+      currentSeries = st.series || 1;
+      buildInitials();
+      renderAll();
+    } catch (error) {
+      console.error('Initialization failed:', error);
+      showAlert('Application failed to initialize properly. Some features may not work.');
+      // Still try to render with defaults
+      try {
+        renderAll();
+      } catch (renderError) {
+        console.error('Fallback render failed:', renderError);
+        showAlert('Critical error: Application cannot display properly. Please refresh the page.');
+      }
+    }
+  })();
+</script>
+</body>
+</html>
