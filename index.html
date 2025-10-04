@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flag Football Playbook</title>
 <style>
-:root{--bg:#0a0e17;--bg-elevated:#111827;--card:#1a2332;--card-hover:#1f2937;--ink:#f9fafb;--muted:#9ca3af;--dim:#6b7280;--accent:#3b82f6;--accent-hover:#2563eb;--success:#10b981;--error:#ef4444;--border:#374151;--qb:#3b82f6;--center:#78716c;--wr:#f97316;--slot:#eab308;--rb:#a855f7;--flex:#14b8a6}*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}h1{font-size:22px;font-weight:700}h2{font-size:18px;font-weight:600;margin-bottom:12px}header{background:var(--bg-elevated);padding:16px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}.sub{font-size:13px;color:var(--muted);margin-top:4px}nav{display:flex;gap:6px;margin-top:12px}nav button{padding:8px 16px;border-radius:8px;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:14px;font-weight:500;transition:all .2s}nav button:hover{background:var(--card);border-color:var(--accent)}nav button.active{background:var(--accent);color:#fff;border-color:var(--accent)}main{padding:16px;max-width:1200px;margin:0 auto}.panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px}.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:var(--muted)}select,input[type=text]{background:var(--bg-elevated);color:var(--ink);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px}select:focus,input:focus{outline:0;border-color:var(--accent)}button{background:var(--bg-elevated);color:var(--ink);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s}button:hover:not(:disabled){background:var(--card-hover);border-color:var(--accent)}button:disabled{opacity:.5;cursor:not-allowed}button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}button.success{background:var(--success);color:#fff}.btn-group{display:flex;gap:8px;flex-wrap:wrap}.alert{padding:12px 16px;border-radius:8px;font-size:14px;margin:12px 0}.alert.error{background:#ef444415;border:1px solid var(--error);color:var(--error)}.alert.success{background:#10b98115;border:1px solid var(--success);color:var(--success)}.meta-bar{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:12px 16px;background:var(--bg-elevated);border-radius:8px;font-size:13px;color:var(--muted);margin-top:12px}.assign{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px}@media(min-width:640px){.assign{grid-template-columns:repeat(3,1fr)}}.tile{border-radius:12px;padding:16px;border:2px solid;cursor:pointer;transition:all .2s}.tile:hover{transform:translateY(-4px)}.tile-header{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px}.tile-value{font-size:36px;font-weight:800}.role-QB{background:#3b82f610;border-color:#3b82f6}.role-C{background:#78716c10;border-color:#78716c}.role-WR1,.role-WR2,.role-WR3{background:#f9731610;border-color:#f97316}.role-RB{background:#a855f710;border-color:#a855f7}.role-Flex{background:#14b8a610;border-color:#14b8a6}.field-wrap{background:linear-gradient(180deg,#2e7d32,#1b5e20);border-radius:12px;padding:12px;border:2px solid #1b5e20}.field{height:400px;position:relative;background:repeating-linear-gradient(to bottom,transparent 0,transparent 38px,rgba(255,255,255,.08)38px,rgba(255,255,255,.08)40px);border-radius:8px}.sideline{position:absolute;inset:0;box-shadow:inset 0 0 0 3px #e0f2f1;border-radius:8px}svg{width:100%;height:100%;display:block}.player{stroke:#0008;stroke-width:1.2px}.bubble{font-size:14px;font-weight:800;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:1.5px}.role-lbl{font-size:10px;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:.6px}.route{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}.route.alt{stroke:#fbbf24;marker-end:url(#arrowAlt)}.grid{display:grid;gap:16px}@media(min-width:900px){.grid-2{grid-template-columns:repeat(2,1fr)}}table{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg-elevated);border-radius:8px}th,td{border:1px solid var(--border);padding:10px;text-align:center}th{background:var(--card);font-weight:600;color:var(--muted);text-transform:uppercase;font-size:11px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;justify-content:center;align-items:center;z-index:1000}.modal.show{display:flex}.modal-content{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:450px;width:90%}.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.modal-close{background:0 0;border:none;color:var(--muted);font-size:28px;cursor:pointer;padding:0}.text-dim{color:var(--dim);font-size:12px}.mt-1{margin-top:8px}details{margin-top:12px}summary{cursor:pointer;padding:8px 12px;background:var(--bg-elevated);border-radius:8px;font-size:13px;color:var(--muted)}details[open] summary{margin-bottom:12px}.initials-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}.initials-grid input{width:100%}
+:root{--bg:#0a0e17;--bg-elevated:#111827;--card:#1a2332;--card-hover:#1f2937;--ink:#f9fafb;--muted:#9ca3af;--dim:#6b7280;--accent:#3b82f6;--accent-hover:#2563eb;--success:#10b981;--error:#ef4444;--border:#374151;--qb:#3b82f6;--center:#78716c;--wr:#f97316;--slot:#eab308;--rb:#a855f7;--flex:#14b8a6;--bench:#f59e0b;--bench-bg:rgba(245,158,11,.12);--bench-border:rgba(251,191,36,.6)}*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}h1{font-size:22px;font-weight:700}h2{font-size:18px;font-weight:600;margin-bottom:12px}header{background:var(--bg-elevated);padding:16px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}.sub{font-size:13px;color:var(--muted);margin-top:4px}nav{display:flex;gap:6px;margin-top:12px}nav button{padding:8px 16px;border-radius:8px;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:14px;font-weight:500;transition:all .2s}nav button:hover{background:var(--card);border-color:var(--accent)}nav button.active{background:var(--accent);color:#fff;border-color:var(--accent)}main{padding:16px;max-width:1200px;margin:0 auto}.panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px}.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:var(--muted)}select,input[type=text]{background:var(--bg-elevated);color:var(--ink);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px}select:focus,input:focus{outline:0;border-color:var(--accent)}button{background:var(--bg-elevated);color:var(--ink);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s}button:hover:not(:disabled){background:var(--card-hover);border-color:var(--accent)}button:disabled{opacity:.5;cursor:not-allowed}button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}button.success{background:var(--success);color:#fff}.btn-group{display:flex;gap:8px;flex-wrap:wrap}.alert{padding:12px 16px;border-radius:8px;font-size:14px;margin:12px 0}.alert.error{background:#ef444415;border:1px solid var(--error);color:var(--error)}.alert.success{background:#10b98115;border:1px solid var(--success);color:var(--success)}.meta-bar{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:12px 16px;background:var(--bg-elevated);border-radius:8px;font-size:13px;color:var(--muted);margin-top:12px}.assign{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px}@media(min-width:640px){.assign{grid-template-columns:repeat(3,1fr)}}.tile{border-radius:12px;padding:16px;border:2px solid;cursor:pointer;transition:all .2s}.tile:hover{transform:translateY(-4px)}#board.bench-pending .assign .tile{border-color:var(--bench);box-shadow:0 0 0 2px rgba(245,158,11,.25)}.bench-section.selecting{border-color:var(--accent);box-shadow:0 0 0 2px rgba(59,130,246,.2)}.bench-section.selecting .bench-hint{color:var(--bench-border)}.tile-header{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px}.tile-value{font-size:36px;font-weight:800}.bench-section{margin-top:16px;padding:12px;border-radius:12px;border:1px solid var(--bench-border);background:var(--bench-bg)}.bench-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--bench-border);margin-bottom:8px}.bench-grid{display:flex;flex-wrap:wrap;gap:12px}.bench-grid .tile{min-width:110px}.tile.bench{background:var(--bench-bg);border-color:var(--bench);color:#fde68a}.tile.bench .tile-header{color:#fcd34d}.tile.bench .tile-value{color:#fff}.tile.bench.selected{border-color:var(--accent);box-shadow:0 0 0 2px rgba(59,130,246,.4);background:rgba(59,130,246,.12)}.bench-hint{margin-top:8px;font-size:12px;color:var(--muted)}.bench-empty{color:var(--muted);font-size:13px;padding:12px 0}.role-QB{background:#3b82f610;border-color:#3b82f6}.role-C{background:#78716c10;border-color:#78716c}.role-WR1,.role-WR2,.role-WR3{background:#f9731610;border-color:#f97316}.role-RB{background:#a855f710;border-color:#a855f7}.role-Flex{background:#14b8a610;border-color:#14b8a6}.field-wrap{background:linear-gradient(180deg,#2e7d32,#1b5e20);border-radius:12px;padding:12px;border:2px solid #1b5e20}.field{height:400px;position:relative;background:repeating-linear-gradient(to bottom,transparent 0,transparent 38px,rgba(255,255,255,.08)38px,rgba(255,255,255,.08)40px);border-radius:8px}.sideline{position:absolute;inset:0;box-shadow:inset 0 0 0 3px #e0f2f1;border-radius:8px}svg{width:100%;height:100%;display:block}.player{stroke:#0008;stroke-width:1.2px}.bubble{font-size:14px;font-weight:800;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:1.5px}.role-lbl{font-size:10px;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:.6px}.route{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}.route.alt{stroke:#fbbf24;marker-end:url(#arrowAlt)}.grid{display:grid;gap:16px}@media(min-width:900px){.grid-2{grid-template-columns:repeat(2,1fr)}}table{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg-elevated);border-radius:8px}th,td{border:1px solid var(--border);padding:10px;text-align:center}th{background:var(--card);font-weight:600;color:var(--muted);text-transform:uppercase;font-size:11px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;justify-content:center;align-items:center;z-index:1000}.modal.show{display:flex}.modal-content{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:450px;width:90%}.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.modal-close{background:0 0;border:none;color:var(--muted);font-size:28px;cursor:pointer;padding:0}.text-dim{color:var(--dim);font-size:12px}.mt-1{margin-top:8px}details{margin-top:12px}summary{cursor:pointer;padding:8px 12px;background:var(--bg-elevated);border-radius:8px;font-size:13px;color:var(--muted)}details[open] summary{margin-bottom:12px}.initials-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}.initials-grid input{width:100%}
 </style>
 </head>
 <body>
@@ -44,6 +44,11 @@
 <h2>Position Assignments</h2>
 <div class="assign" id="assignGrid"></div>
 <p class="text-dim mt-1">Tap any tile to swap players</p>
+<div id="benchSection" class="bench-section" style="margin-top:16px">
+	<div class="bench-title">Benched Players</div>
+	<div class="bench-grid" id="benchGrid"></div>
+	<div class="bench-hint">Tap a benched player, then tap a position tile to swap for this series.</div>
+</div>
 </section>
 <section id="plays" class="panel" style="display:none">
 <h2>Built-in Plays</h2>
@@ -102,12 +107,50 @@ function svgDefs(){return`<defs><marker id="arrow" markerWidth="8" markerHeight=
 function keysForFmt(f){if(f==5)return['QB','C','WR1','WR2','RB'];if(f==6)return['QB','C','WR1','WR2','WR3','RB'];return['QB','C','WR1','WR2','WR3','RB','Flex']}
 function rotationRows(r,f){const keys=keysForFmt(f),on=keys.length,bc=Math.max(0,r-on),players=Array.from({length:r},(_,i)=>i+1),groups=[];if(bc===0)groups.push([]);else for(let i=0;i<r;i+=bc)groups.push(players.slice(i,i+bc));const G=groups.length,rows=[],total=Math.max(r,G);for(let s=0;s<total;s++){const bench=groups[s%G],active=players.filter(p=>!bench.includes(p)),rotated=active.map((_,i)=>active[(i+s)%active.length]),lineup={};for(let i=0;i<keys.length;i++)lineup[keys[i]]=rotated[i];rows.push({series:s+1,lineup,bench:[...bench]})}return rows}
 let currentSeries=1;
+let benchSelected=null;
 function currentRows(){return rotationRows(parseInt($('#roster').value),parseInt($('#format').value))}
 function clampSeries(){const r=currentRows();if(currentSeries>r.length)currentSeries=1;if(currentSeries<1)currentSeries=r.length}
 function lineupForSeries(row){const st=loadState(),ov=st.overrides&&st.overrides[String(currentSeries)];if(!ov)return row.lineup;const keys=keysForFmt(parseInt($('#format').value));return keys.every(k=>ov.hasOwnProperty(k))?ov:row.lineup}
+function benchForLineup(lineup,rosterCount){const total=isNaN(rosterCount)?0:rosterCount;const active=Object.values(lineup||{}).filter(n=>typeof n==='number');return Array.from({length:total},(_,i)=>i+1).filter(n=>!active.includes(n))}
 function buildInitials(){const n=parseInt($('#roster').value),box=$('#initials');box.innerHTML='';const st=loadState();for(let i=1;i<=n;i++){const inp=document.createElement('input');inp.placeholder='#'+i;inp.id='init-'+i;inp.maxLength=3;inp.value=(st.initials&&st.initials[i])||'';inp.addEventListener('input',()=>{const cur=loadState();cur.initials=cur.initials||{};cur.initials[i]=inp.value.toUpperCase().slice(0,3);saveState(cur);renderBoard()});box.appendChild(inp)}}
 function initialsMap(){const n=parseInt($('#roster').value),m={};for(let i=1;i<=n;i++){const el=$('#init-'+i);m[i]=el?el.value.toUpperCase().slice(0,3):''}return m}
-function renderBoard(){const fmt=parseInt($('#format').value),roster=parseInt($('#roster').value),mode=$('#idMode').value,init=initialsMap(),rows=currentRows();clampSeries();const baseRow=rows[currentSeries-1],lineup=lineupForSeries(baseRow);$('#meta').innerHTML=`Series <strong>${currentSeries}</strong> of <strong>${rows.length}</strong> <span style="margin-left:12px">Bench: ${baseRow.bench.join(', ')||'—'}</span>`;const grid=$('#assignGrid');grid.innerHTML='';keysForFmt(fmt).forEach(pos=>{const num=lineup[pos],label=mode==='initials'&&init[num]?init[num]:mode==='off'?'':num,p=POS.find(pp=>pp.key===pos),tile=document.createElement('div');tile.className='tile role-'+pos;tile.dataset.pos=pos;tile.innerHTML=`<div class="tile-header">${p.displayName}</div><div class="tile-value">${label}</div>`;grid.appendChild(tile)})}
+function renderBoard(){const fmt=parseInt($('#format').value),roster=parseInt($('#roster').value),mode=$('#idMode').value,init=initialsMap(),rows=currentRows();
+clampSeries();
+const baseRow=rows[currentSeries-1],lineup=lineupForSeries(baseRow),bench=benchForLineup(lineup,roster);
+if(benchSelected!==null&&!bench.includes(benchSelected))benchSelected=null;
+const boardPanel=$('#board');
+if(boardPanel)boardPanel.classList.toggle('bench-pending',benchSelected!==null);
+const benchSection=$('#benchSection');
+if(benchSection)benchSection.classList.toggle('selecting',benchSelected!==null);
+$('#meta').innerHTML=`Series <strong>${currentSeries}</strong> of <strong>${rows.length}</strong> <span style="margin-left:12px">Bench: ${bench.length?bench.join(', '):'None'}</span>`;
+const grid=$('#assignGrid');grid.innerHTML='';
+keysForFmt(fmt).forEach(pos=>{
+const num=lineup[pos],label=mode==='initials'&&init[num]?init[num]:mode==='off'?'':num,p=POS.find(pp=>pp.key===pos),tile=document.createElement('div');
+tile.className='tile role-'+pos;
+tile.dataset.pos=pos;
+tile.innerHTML=`<div class="tile-header">${p.displayName}</div><div class="tile-value">${label}</div>`;
+grid.appendChild(tile)
+});
+const benchGrid=$('#benchGrid');
+if(benchGrid){
+benchGrid.innerHTML='';
+if(bench.length){
+bench.forEach(num=>{
+const label=mode==='initials'&&init[num]?init[num]:mode==='off'?'':num,tile=document.createElement('div');
+tile.className='tile bench';
+tile.dataset.player=num;
+if(benchSelected===num)tile.classList.add('selected');
+tile.innerHTML=`<div class="tile-header">Player #${num}</div><div class="tile-value">${label}</div>`;
+benchGrid.appendChild(tile)
+})
+}else{
+const msg=document.createElement('div');
+msg.className='bench-empty';
+msg.textContent='Everyone is on the field this series.';
+benchGrid.appendChild(msg)
+}
+}
+}
 function renderPlay(def,fmt){const keys=keysForFmt(fmt),routes=[];Object.entries(def).forEach(([pos,route],idx)=>{if(keys.includes(pos)&&R[route]){const paths=segs(R[route],pos);paths.forEach(d=>routes.push(`<path d="${d}" class="route${idx%2?' alt':''}"/>`))}});return routes.join('')}
 function renderPlays(){const fmt=parseInt($('#format').value),mode=$('#idMode').value,init=initialsMap(),rows=currentRows();clampSeries();const lineup=lineupForSeries(rows[currentSeries-1]),grid=$('#playGrid');grid.innerHTML='';Object.entries(PLAYS).forEach(([name,def])=>{const bubbles=keysForFmt(fmt).map(k=>{const num=lineup[k],label=mode==='initials'&&init[num]?init[num]:mode==='off'?'':num,p=P(k);return`<circle cx="${p.x}" cy="${p.y}" r="16" class="player" fill="${p.color}"/><text x="${p.x}" y="${p.y+4}" text-anchor="middle" class="bubble">${label}</text><text x="${p.x}" y="${p.y+18}" text-anchor="middle" class="role-lbl">${p.displayName}</text>`}).join(''),routes=renderPlay(def,fmt),card=document.createElement('div');card.className='panel';card.innerHTML=`<h3>${name}</h3><div class="field-wrap"><div class="field"><div class="sideline"></div><svg viewBox="0 0 600 400">${svgDefs()}${bubbles}${routes}</svg></div></div>`;grid.appendChild(card)})}
 function renderRotation(){const fmt=parseInt($('#format').value),rows=currentRows(),keys=keysForFmt(fmt),names=keys.map(k=>POS.find(p=>p.key===k).displayName);let h=`<table><thead><tr><th>Series</th>${names.map(n=>`<th>${n}</th>`).join('')}<th>Bench</th></tr></thead><tbody>`;rows.forEach(r=>h+=`<tr><td>${r.series}</td>${keys.map(k=>`<td>${r.lineup[k]||''}</td>`).join('')}<td>${r.bench.join(', ')||'-'}</td></tr>`);h+='</tbody></table>';$('#rotationTable').innerHTML=h}
@@ -122,9 +165,292 @@ $('#nextBtn').addEventListener('click',()=>{currentSeries++;clampSeries();saveSt
 $('#prevBtn').addEventListener('click',()=>{currentSeries--;clampSeries();saveState({series:currentSeries});renderAll()});
 $('#resetBtn').addEventListener('click',()=>{if(confirm('Clear all saved data?')){localStorage.removeItem(STORE_KEY);location.reload()}});
 $('#clearOverrideBtn').addEventListener('click',()=>{const st=loadState();if(st.overrides){delete st.overrides[String(currentSeries)];saveState(st);renderAll()}});
-$('#assignGrid').addEventListener('click',e=>{const tile=e.target.closest('.tile');if(!tile)return;const pos=tile.dataset.pos;if(!pos)return;const fmt=parseInt($('#format').value),keys=keysForFmt(fmt),rows=currentRows();clampSeries();const baseRow=rows[currentSeries-1],cur={...lineupForSeries(baseRow)},mode=loadState().tapMode||'position';if(mode==='position'){const i=keys.indexOf(pos),j=(i+1)%keys.length,pos2=keys[j],tmp=cur[pos];cur[pos]=cur[pos2];cur[pos2]=tmp}else{const roster=parseInt($('#roster').value),activeList=Array.from({length:roster},(_,i)=>i+1).filter(n=>!baseRow.bench.includes(n)),currentPlayer=cur[pos],idx=activeList.indexOf(currentPlayer),nextPlayer=activeList[(idx+1)%activeList.length],pos2=keys.find(k=>cur[k]===nextPlayer);if(pos2){const tmp=cur[pos];cur[pos]=cur[pos2];cur[pos2]=tmp}}const st=loadState();st.overrides=st.overrides||{};st.overrides[String(currentSeries)]=cur;saveState(st);renderAll()});
+$('#assignGrid').addEventListener('click',e=>{
+const tile=e.target.closest('.tile');
+if(!tile)return;
+const pos=tile.dataset.pos;
+if(!pos)return;
+const fmt=parseInt($('#format').value),keys=keysForFmt(fmt),rows=currentRows();
+clampSeries();
+const baseRow=rows[currentSeries-1],cur={...lineupForSeries(baseRow)};
+const st=loadState(),mode=st.tapMode||'position',roster=parseInt($('#roster').value),benchList=benchForLineup(cur,roster);
+// If a bench player has been selected, swap them into this position
+if(benchSelected!==null){
+const incoming=benchSelected;
+benchSelected=null;
+if(cur[pos]!==incoming){
+const existingPos=keys.find(k=>cur[k]===incoming);
+if(existingPos){
+const tmp=cur[pos];
+cur[pos]=incoming;
+cur[existingPos]=tmp;
+}else{
+cur[pos]=incoming;
+}
+st.overrides=st.overrides||{};
+st.overrides[String(currentSeries)]=cur;
+saveState(st);
+}
+renderAll();
+return;
+}
+if(mode==='position'){
+const i=keys.indexOf(pos);
+if(i>-1&&keys.length>1){
+const j=(i+1)%keys.length,pos2=keys[j],tmp=cur[pos];
+cur[pos]=cur[pos2];
+cur[pos2]=tmp;
+}
+}else{
+const activeList=Array.from({length:roster},(_,i)=>i+1).filter(n=>!benchList.includes(n)),currentPlayer=cur[pos],idx=activeList.indexOf(currentPlayer);
+if(activeList.length>1&&idx>-1){
+const nextPlayer=activeList[(idx+1)%activeList.length],pos2=keys.find(k=>cur[k]===nextPlayer);
+if(pos2){
+const tmp=cur[pos];
+cur[pos]=cur[pos2];
+cur[pos2]=tmp;
+}
+}
+}
+st.overrides=st.overrides||{};
+st.overrides[String(currentSeries)]=cur;
+saveState(st);
+renderAll();
+});
+/* New: bench tile click handler — toggle selection for swapping */
+$('#benchGrid').addEventListener('click', e=>{
+const tile = e.target.closest('.tile.bench');
+if(!tile) return;
+const player = parseInt(tile.dataset.player);
+if(isNaN(player)) return;
+benchSelected = benchSelected===player ? null : player;
+renderAll();
+});
+/* Small updates: clear bench selection when navigating or changing format/roster
+   so bench selection is transient (only for current UI/series) */
+$('#format').addEventListener('change',()=>{
+currentSeries=1;
+benchSelected=null;
+saveState({format:parseInt($('#format').value),overrides:{}});
+renderAll();
+});
+$('#roster').addEventListener('change',()=>{
+buildInitials();
+currentSeries=1;
+benchSelected=null;
+saveState({roster:parseInt($('#roster').value),overrides:{}});
+renderAll();
+});
+$('#nextBtn').addEventListener('click',()=>{
+currentSeries++;
+benchSelected=null;
+clampSeries();
+saveState({series:currentSeries});
+renderAll();
+});
+$('#prevBtn').addEventListener('click',()=>{
+currentSeries--;
+benchSelected=null;
+clampSeries();
+saveState({series:currentSeries});
+renderAll();
+});
 window.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight'){e.preventDefault();$('#nextBtn').click()}if(e.key==='ArrowLeft'){e.preventDefault();$('#prevBtn').click()}if(e.key.toLowerCase()==='m'){e.preventDefault();const sel=$('#mirror');sel.value=sel.value==='L'?'R':'L';saveState({mirror:sel.value});renderAll()}});
 (function init(){const st=loadState();$('#format').value=st.format||6;$('#roster').value=st.roster||8;$('#idMode').value=st.idMode||'number';$('#mirror').value=st.mirror||'R';$('#tapMode').value=st.tapMode||'position';currentSeries=st.series||1;buildInitials();renderAll()})();
+/* =====================
+   Custom Play Editor JS
+   - Fixes "+ New Play"
+   - Adds pointer/touch drag & drop
+   - Saves custom plays to localStorage
+   ===================== */
+
+const customSvg = $('#customSvg');
+const newCustomBtn = $('#newCustomBtn');
+const undoBtnEl = $('#undoBtn'), redoBtnEl = $('#redoBtn'), saveBtnEl = $('#saveCustomBtn'), resetBtnEl = $('#resetCustomBtn');
+const nameModal = $('#nameModal'), playNameInput = $('#playNameInput'), cancelNameBtn = $('#cancelName'), confirmNameBtn = $('#confirmName');
+const myPlaysGrid = $('#myPlaysGrid');
+const modalClose = document.querySelector('.modal-close');
+
+let currentCustom = null;
+let dragTarget = null;
+
+// Utility: convert client coords -> SVG viewBox coords (600x400)
+function svgPoint(clientX, clientY){
+	const rect = customSvg.getBoundingClientRect();
+	return { x: (clientX - rect.left) * (600 / rect.width), y: (clientY - rect.top) * (400 / rect.height) };
+}
+
+// Render simple nodes for current format into editor SVG
+function renderCustomEditor(){
+	customSvg.innerHTML = svgDefs(); // reuse defs
+	// Field background placeholder (sideline already in markup when used elsewhere)
+	const keys = keysForFmt(parseInt($('#format').value));
+	keys.forEach(k=>{
+		const p = P(k);
+		// Create group with circle + label
+		const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+		g.classList.add('custom-node');
+		g.dataset.role = k;
+		// default position: P(k) (mirroring applied)
+		const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+		circle.setAttribute('r',16);
+		circle.setAttribute('cx',p.x);
+		circle.setAttribute('cy',p.y);
+		circle.setAttribute('fill',p.color);
+		circle.setAttribute('stroke','#0008');
+		circle.setAttribute('stroke-width','1.2');
+		const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+		text.setAttribute('x',p.x);
+		text.setAttribute('y',p.y+4);
+		text.setAttribute('text-anchor','middle');
+		text.setAttribute('class','bubble');
+		text.textContent = k;
+		g.appendChild(circle); g.appendChild(text);
+		customSvg.appendChild(g);
+	});
+	// ensure controls enabled
+	saveBtnEl.disabled = false;
+	resetBtnEl.disabled = false;
+	undoBtnEl.disabled = true;
+	redoBtnEl.disabled = true;
+}
+
+// Pointer handlers (work on desktop and modern iOS Safari)
+function onPointerDown(e){
+	// accept PointerEvent or synthetic {clientX, clientY, target, pointerId}
+	if(e.target == null) return;
+	const node = e.target.closest ? e.target.closest('.custom-node') : null;
+	if(node){
+		dragTarget = node;
+		try{ e.pointerId && dragTarget.setPointerCapture && dragTarget.setPointerCapture(e.pointerId); }catch{}
+		e.preventDefault && e.preventDefault();
+	}
+}
+function onPointerMove(e){
+	if(!dragTarget) return;
+	const pt = svgPoint(e.clientX, e.clientY);
+	const circle = dragTarget.querySelector('circle');
+	const text = dragTarget.querySelector('text');
+	if(circle){ circle.setAttribute('cx', pt.x); circle.setAttribute('cy', pt.y); }
+	if(text){ text.setAttribute('x', pt.x); text.setAttribute('y', pt.y + 4); }
+}
+function onPointerUp(e){
+	if(!dragTarget) return;
+	try{ e.pointerId && dragTarget.releasePointerCapture && dragTarget.releasePointerCapture(e.pointerId); }catch{}
+	dragTarget = null;
+}
+
+// Touch fallback wrappers to normalize to pointer handlers (for older WebKit)
+function touchStartHandler(ev){
+	if(!ev.touches || ev.touches.length===0) return;
+	const t = ev.touches[0];
+	// create synthetic event-like object
+	onPointerDown({ clientX: t.clientX, clientY: t.clientY, target: document.elementFromPoint(t.clientX, t.clientY), pointerId: 1, preventDefault: ()=>ev.preventDefault() });
+}
+function touchMoveHandler(ev){
+	if(!ev.touches || ev.touches.length===0) return;
+	const t = ev.touches[0];
+	onPointerMove({ clientX: t.clientX, clientY: t.clientY });
+	ev.preventDefault && ev.preventDefault();
+}
+function touchEndHandler(ev){
+	onPointerUp({});
+}
+
+// Attach event listeners to SVG
+customSvg.addEventListener('pointerdown', onPointerDown);
+customSvg.addEventListener('pointermove', onPointerMove);
+customSvg.addEventListener('pointerup', onPointerUp);
+customSvg.addEventListener('pointercancel', onPointerUp);
+// touch fallback
+customSvg.addEventListener('touchstart', touchStartHandler, {passive:false});
+customSvg.addEventListener('touchmove', touchMoveHandler, {passive:false});
+customSvg.addEventListener('touchend', touchEndHandler);
+
+// Open editor: create nodes and show custom tab
+newCustomBtn.addEventListener('click', ()=>{
+	// switch to custom tab
+	const tab = document.querySelector('.tab[data-tab="custom"]');
+	tab && tab.click();
+	currentCustom = { name:'', format: parseInt($('#format').value) };
+	renderCustomEditor();
+	// show name modal immediately so user can name before saving
+	nameModal.classList.add('show');
+	playNameInput.value = '';
+	setTimeout(()=>playNameInput.focus(),50);
+});
+
+// Modal controls
+confirmNameBtn.addEventListener('click', ()=>{
+	const name = (playNameInput.value || 'Custom Play').trim();
+	// persist current svg markup as the "play"
+	const st = loadState();
+	st.playsCustom = st.playsCustom || [];
+	st.playsCustom.push({ name, format: currentCustom ? currentCustom.format : parseInt($('#format').value), svg: customSvg.innerHTML });
+	saveState(st);
+	nameModal.classList.remove('show');
+	renderMyPlays();
+	showAlert('Play saved','success');
+});
+cancelNameBtn.addEventListener('click', ()=> nameModal.classList.remove('show'));
+modalClose && modalClose.addEventListener('click', ()=> nameModal.classList.remove('show'));
+
+// Render saved custom plays list (My Custom Plays)
+function renderMyPlays(){
+	myPlaysGrid.innerHTML = '';
+	const st = loadState();
+	(st.playsCustom || []).forEach((p, idx)=>{
+		const card = document.createElement('div');
+		card.className = 'panel';
+		card.innerHTML = `<h3>${p.name}</h3>
+			<div class="field-wrap" style="margin-top:8px"><div class="field"><div class="sideline"></div>
+			<svg viewBox="0 0 600 400">${svgDefs()}${p.svg}</svg></div></div>
+			<div style="margin-top:8px;display:flex;gap:8px;justify-content:flex-end">
+				<button data-idx="${idx}" class="loadPlay">Load</button>
+				<button data-idx="${idx}" class="deletePlay">Delete</button>
+			</div>`;
+		myPlaysGrid.appendChild(card);
+	});
+	// attach handlers (delegated attach after render)
+	$$('.loadPlay').forEach(b=>{
+		b.addEventListener('click', (ev)=>{
+			const i = parseInt(b.dataset.idx);
+			const st = loadState();
+			const p = st.playsCustom[i];
+			if(!p) return;
+			const tab = document.querySelector('.tab[data-tab="custom"]');
+			tab && tab.click();
+			// load saved svg into editor
+			customSvg.innerHTML = p.svg;
+			currentCustom = { name: p.name, format: p.format };
+		});
+	});
+	$$('.deletePlay').forEach(b=>{
+		b.addEventListener('click', ()=>{
+			if(!confirm('Delete this custom play?')) return;
+			const i = parseInt(b.dataset.idx);
+			const st = loadState();
+			st.playsCustom.splice(i,1);
+			saveState(st);
+			renderMyPlays();
+		});
+	});
+}
+
+// Wire Save/Reset minimal behaviors
+saveBtnEl.addEventListener('click', ()=>{
+	// open name modal if no name yet
+	nameModal.classList.add('show');
+	playNameInput.value = currentCustom && currentCustom.name ? currentCustom.name : '';
+	playNameInput.focus();
+});
+resetBtnEl.addEventListener('click', ()=>{
+	if(!confirm('Reset custom play to default positions?')) return;
+	renderCustomEditor();
+});
+
+// Initialize My Plays list on load
+renderMyPlays();
 </script>
 </body>
 </html>

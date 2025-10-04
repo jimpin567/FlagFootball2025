@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "ritwickdey.liveserver",
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-typescript-next",
+    "formulahendry.code-runner",
+    "eamodio.gitlens",
+    "ecmel.vscode-html-css"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  // Formatting
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "prettier.printWidth": 100,
+  "prettier.tabWidth": 2,
+  "prettier.singleQuote": false,
+
+  // HTML/CSS/JS hints
+  "emmet.includeLanguages": { "javascript": "javascriptreact", "html": "html" },
+
+  // Live Server (right-click index.html > Open with Live Server)
+  "liveServer.settings.root": "/",
+  "liveServer.settings.port": 5500,
+  "liveServer.settings.wait": 100,
+  "liveServer.settings.noBrowser": false,
+
+  // Quieter Git
+  "git.logging.level": "warn",
+
+  // GitLens (less noisy but still useful)
+  "gitlens.currentLine.enabled": false,
+  "gitlens.hovers.currentLine.over": "line",
+  "gitlens.mode.active": "zen",
+
+  // Trust workspace (prevents nag prompts)
+  "security.workspace.trust.enabled": true
+}
