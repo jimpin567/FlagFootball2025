@@ -102,6 +102,18 @@ const mirX=x=>$('#mirror').value==='L'?600-x:x;
 const P=k=>{const p=POS.find(pp=>pp.key===k);return{...p,x:mirX(p.x)}};
 const OFF={up:20,side:20},YD={y5:50,y10:100,y15:150,y20:200};
 const R={HITCH:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y10} L${x-25} ${y-YD.y10+20}`],SLANT:(x,y)=>[`M${x+OFF.side} ${y} L${x+120} ${y-80}`],OUT10:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y10} H${x+150}`],POST:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y10} L${x+100} ${y-YD.y20}`],CORNER:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y10} L${x+100} ${y-YD.y5}`],FLY:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y20}`],FLAT:(x,y)=>[`M${x+OFF.side} ${y} H${x+160}`],SWING:(x,y)=>[`M${x+OFF.side} ${y} C${x+40} ${y} ${x+100} ${y-20} ${x+180} ${y-40}`],WHEEL:(x,y)=>[`M${x+OFF.side} ${y} H${x+100} C${x+140} ${y-20} ${x+140} ${y-80} ${x+140} ${y-YD.y15}`],CHECK:(x,y)=>[`M${x} ${y-OFF.up} L${x-25} ${y-25} L${x} ${y-40}`],C_SIT:(x,y)=>[`M${x} ${y-OFF.up} V${y-60}`],C_SLANT:(x,y)=>[`M${x} ${y-OFF.up} L${x+80} ${y-60}`],CROSS_BEHIND:(x,y)=>[`M${x-OFF.side} ${y} C${x-60} ${y+20} ${x} ${y+40} ${x+160} ${y+40}`]};
+function svgDefs(){
+  return `
+    <defs>
+      <marker id="arrow" markerWidth="8" markerHeight="8" refX="5" refY="4" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,8 L8,4 z" fill="#ffffff" stroke="#000" stroke-width="0.5"></path>
+      </marker>
+      <marker id="arrowAlt" markerWidth="8" markerHeight="8" refX="5" refY="4" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,8 L8,4 z" fill="#ffeb3b" stroke="#000" stroke-width="0.5"></path>
+      </marker>
+    </defs>
+  `;
+}
 const segs=(fn,k)=>{const{x,y}=P(k);return fn(x,y)};
 function svgDefs(){return`<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="5" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#fff" stroke="#000" stroke-width="0.5"/></marker><marker id="arrowAlt" markerWidth="8" markerHeight="8" refX="5" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#fbbf24" stroke="#000" stroke-width="0.5"/></marker></defs>`}
 function keysForFmt(f){if(f==5)return['QB','C','WR1','WR2','RB'];if(f==6)return['QB','C','WR1','WR2','WR3','RB'];return['QB','C','WR1','WR2','WR3','RB','Flex']}
